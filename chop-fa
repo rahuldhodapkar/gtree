@@ -1,0 +1,144 @@
+#!/usr/bin/perl
+
+use warnings;
+use Getopt::Long;
+Getopt::Long::Configure (qw{bundling no_auto_abbrev no_ignore_case_always});
+
+my $usage_string = <<"HERE";
+usage: chop-fa --in <FASTA> --out <OUTDIR> [--norm]
+
+chop-fa chops a FASTA file into a set of contiguous strings, removing
+newlines and other pesky things. Hard-masked repeats denoted by "N" and
+header changes in the FASTA file will cause a sequence number increment in
+the output directory.
+
+Options:
+  --in                              the input file in FASTA format, <STDIN>
+                                    if not specified
+  --out                             the ouput directory base for chopped files
+  --norm                            if provided, normalize all output to the
+                                    minimal alphabet {A,T,C,G}
+  --help                            print this message
+HERE
+
+my $input_file;             # optional input file
+my $output_base;            # base path of the output directory to chop into
+my $m_norm = 0;
+my $help = 0;
+
+GetOptions ('in|i=s'         => \$input_file,
+            'out|o=s'        => \$output_base,
+            'norm|n'         => \$m_norm,
+            'help|h'         => \$help);
+
+if ( $help ) {
+    print $usage_string;
+    exit 0;
+}
+
+if ( ! defined $output_base ) {
+    die "ERROR: usage error, no output directory specified";
+}
+
+my $in  = *STDIN;
+
+if ( defined $output_base ) {
+    if (! -e $output_base) {
+        mkdir $output_base
+            or die qq("ERROR: can't set up $output_base for writing: $!");
+    }
+    if (! -d $output_base) {
+        die qq("ERROR: $output_base is not a directory: $!");
+    }
+}
+
+if ( defined $input_file ) {
+    open ($in, "<", $input_file)
+        or die qq("ERROR: can't open file $input_file for reading: $!");
+}
+
+my $title = "UNNAMED";
+my $sn = 0;
+
+sub open_out {
+    my ($out_base, $title, $sn) = @_;
+    my $out;
+    open ($out, ">", sprintf("%s/%s-%03d", $out_base, $title, $sn))
+        or die qq("ERROR: can't open file $out_base/$title-$sn for writing: $!");
+    return *$out;
+}
+
+my $file_written_to = 0;
+
+# track statistics for transformation
+my $hard_masked_chars = 0;
+my $soft_masked_chars = 0;
+my $valid_chars = 0;
+my $processed_chars = 0;
+
+my $out = open_out($output_base, $title, $sn);
+my $new_file_reqd = 0;
+
+while (my $char = getc($in)) {
+    $processed_chars++;
+
+    if ($processed_chars % 1000000 == 0) {
+        print "= $title : $sn ============================\n";
+        print "processed: $processed_chars\n";
+        print "soft_mask: $soft_masked_chars\n";
+        print "hard_mask: $hard_masked_chars\n";
+        print "valid_chr: $valid_chars\n";
+        print "=========================================\n";
+    }
+
+    if ($char eq "\n") {
+        next;
+    }
+    elsif ($char eq '>') {
+        close $out;
+
+        $title = readline($in);
+        chomp $title;
+
+        $sn = 0;
+        $file_written_to = 0;
+
+        $out = open_out($output_base, $title, $sn);
+    }
+    elsif ($char eq 'N') {
+        $hard_masked_chars++;
+        if ($file_written_to) {
+            close $out;
+
+            $sn++;
+            $file_written_to = 0;
+
+            $out = open_out($output_base, $title, $sn);
+        }
+    }
+    elsif ($char =~ /[ACTG]/) {
+        $file_written_to = 1;
+        $valid_chars++;
+        print $out $char;
+    }
+    elsif ($char =~ /[actg]/) {
+        $file_written_to = 1;
+        $soft_masked_chars++;
+        print $out uc($char);
+    }
+    else {
+        print "error [$char] found\n";
+    }
+}
+
+print "===========ALL DONE!=====================\n";
+print "processed: $processed_chars\n";
+print "soft_mask: $soft_masked_chars\n";
+print "hard_mask: $hard_masked_chars\n";
+print "valid_chr: $valid_chars\n";
+print "=========================================\n";
+
+
+
+
+
