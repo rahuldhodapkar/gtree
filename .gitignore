@@ -1,9 +1,13 @@
 # don't save built binaries in repository
-gtree
+align
 
-# editor artifacts
+# editor artefacts
 *.swp
 *.swo
+.vscode
 
-# debug artifacts
+# debug artefacts
 *.dSYM
+
+# build artefacts
+*.o
