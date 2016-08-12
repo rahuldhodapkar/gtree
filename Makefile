@@ -2,6 +2,12 @@ CC=gcc
 CFLAGS=-Wall -pedantic -std=c99
 DEBUG=-ggdb
 
+all: align
+
+# Target-specific variable values for "debug"
+debug: CFLAGS += -ggdb
+debug: align
+
 align: src/align.c gtree.o build_gtree.o
 	$(CC) $(CFLAGS) $^ -o $@
 
@@ -11,12 +17,11 @@ build_gtree.o: src/build_gtree.c
 gtree.o: src/gtree.c
 	$(CC) $(CFLAGS) $^ -c -o $@
 
-.PHONY: clean debug
+.PHONY: clean
 
-CLEAN_TARGETS=gtree gtree-debug *.dSYM *.o
+CLEAN_TARGETS=align align-debug *.dSYM *.o
 CLEAN_FLAGS=-rf
 
 clean:
 	rm $(CLEAN_FLAGS) $(CLEAN_TARGETS)
 
-debug: gtree-debug
