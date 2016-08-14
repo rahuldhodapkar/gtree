@@ -203,3 +203,72 @@ int destroy_ix( ix_t *ix ) {
     
     return 0;
 }
+
+int serialize_ix( ix_t *ix, char *outfile ) {
+    // needs to be done iteratively to avoid stackoverflow
+
+    FILE *out = fopen(outfile, "w+");
+    
+    // write header
+    // EMPTY right now
+
+    // write n_desc_strings
+    fwrite(&(ix->n_descs), sizeof(unsigned int), 1, out);
+
+    // write strings
+    int i;
+    for (i = 0; i < ix->n_descs; i++) {
+        // INT_N_LEN
+        size_t desclen = strlen(ix->descs[i]);
+        fwrite(&desclen, sizeof(size_t), 1, out);
+        // DESC_STRING
+        fwrite(ix->descs[i], sizeof(char), strlen(ix->descs[i]) + 1, out);
+    }
+
+    fclose(out);
+
+    return 0;
+}
+
+ix_t *deserialize_ix( char *ixfile ) {
+
+    FILE *in = fopen(ixfile, "r");
+
+    ix_t *ix = init_ix();
+
+    // read header
+    // EMPTY right now
+
+    // read n_desc_strings
+    fread(&(ix->n_descs), sizeof(unsigned int), 1, in);
+    ix->descs = realloc(ix->descs, sizeof(char *) * ix->n_descs);
+
+    // read in desc strings
+    int i;
+    for (i = 0; i < ix->n_descs; i++) {
+        // INT_N_LEN
+        size_t desclen;
+        fread(&desclen, sizeof(size_t), 1, in);
+        
+        // DESC_STRING
+        ix->descs[i] = malloc(sizeof(char) * (desclen + 1));
+        fread(ix->descs[i], sizeof(char), desclen + 1, in);
+    }
+
+    fclose(in);
+
+    return ix;
+}
+
+void print_ix_info( ix_t *ix ) {
+    printf("printing index info:\n");
+    printf("n_descs: %u\n", ix->n_descs);
+
+    int i;
+    for (i = 0; i < ix->n_descs; i++) {
+        printf("    desc[%d]: %s\n", i, ix->descs[i]);
+    }
+
+    printf("done printing info\n");
+}
+
