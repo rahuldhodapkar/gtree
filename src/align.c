@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
     /////////////////////////////////////////////////////////////////////////
     //  BUILD INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Building...");
+    printf("Building...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     ix = build_ix_from_ref_seq(fgenome);
@@ -39,13 +39,13 @@ int main(int argc, char *argv[]) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf(" done in %ld.%06ld secs\n", (long int)tval_result.tv_sec, 
+    printf("INFO: Building done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  SERIALIZE INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Serializing...");
+    printf("Serializing...\n");
     gettimeofday(&tval_before, NULL);
 
     // call to time
@@ -53,26 +53,26 @@ int main(int argc, char *argv[]) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf(" done in %ld.%06ld secs\n", (long int)tval_result.tv_sec, 
+    printf("INFO: Serializing done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Destroying built index...");
+    printf("Destroying built index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     destroy_ix(ix);
     // 
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf(" done in %ld.%06ld secs\n", (long int)tval_result.tv_sec, 
+    printf("INFO: Destroying done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  LOAD INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Loading index...");
+    printf("Loading index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     ix = deserialize_ix(ix_fname);
@@ -80,20 +80,20 @@ int main(int argc, char *argv[]) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf(" done in %ld.%06ld secs\n", (long int)tval_result.tv_sec, 
+    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Destroying loaded index...");
+    printf("Destroying loaded index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     destroy_ix(ix);
     // 
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf(" done in %ld.%06ld secs\n", (long int)tval_result.tv_sec, 
+    printf("INFO: Destroying done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     printf("finished running!\n");
