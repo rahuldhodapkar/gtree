@@ -11,3 +11,6 @@ align
 
 # build artefacts
 *.o
+
+# orchestration artefacts
+.vagrant
