@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -pedantic -std=c99
+CFLAGS=-Wall -pedantic -std=c99 -DTRACE -D_BSD_SOURCE
 DEBUG=-ggdb
 
 all: align

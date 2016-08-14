@@ -7,6 +7,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+// global pushback buffer defs for getc wrappers
+char PUSHBACK_BUFFER[MAX_WINDOW_SIZE];
+int PUSHBACK_POS = -1;
+
 char bufgetc(FILE *stream) {
     if (PUSHBACK_POS < 0) {
         return getc(stream);

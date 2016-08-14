@@ -25,10 +25,6 @@ typedef struct gtreeix {
     char **descs;       // access to all description strings in gtree
 } ix_t;
 
-// global pushback buffer defs for getc wrappers
-static char PUSHBACK_BUFFER[MAX_WINDOW_SIZE];
-static int PUSHBACK_POS = -1;
-
 /**
  * "getc()"-like interface to a file, with MAX_WINDOW_SIZE allowable chars of
  * pushback in a global buffer, allowing for efficient and easy-to-understand
