@@ -2,6 +2,7 @@
  * basic C implementation of the gtree builder
  */
 #include "gtree.h"
+#include "build_gtree.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,4 +46,44 @@ void destroy_gtree( gtree_t *node ) {
             depth--;
         }
     }
+}
+
+void prune_gtree( gtree_t *node ) {
+
+    int i, n_children = 0;
+    gtree_t *children[4];
+    int nextpos[4];
+
+    for (i = 0; i < 4; i++) {
+        if (node->next[i] != NULL) {
+            children[n_children] = node->next[i];
+            nextpos[n_children] = i;
+            n_children++;
+        }
+    }
+
+    if (n_children == 0) {
+        // nothing to be done
+        return;
+    }
+    else if (n_children > 1) {
+        // recursively prune
+        for (i = 0; i < n_children; i++) {
+            prune_gtree(children[i]);
+        }
+        return;
+    }
+    // else 1 child
+    if (node->too_full) {
+        prune_gtree(children[0]);
+        return;
+    }
+
+    // check if number of matches equal
+    if (node->n_matches == children[0]->n_matches) {
+        // then we may prune the child
+        node->next[nextpos[0]] = NULL;
+        destroy_gtree(children[0]);
+    }
+    return;
 }

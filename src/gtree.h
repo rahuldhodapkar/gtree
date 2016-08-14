@@ -7,8 +7,6 @@
  */
 
 #define MAX_LOCS_PER_NODE 4
-#define MAX_DESC_LEN 100
-#define MAX_WINDOW_SIZE 10
 
 typedef enum bp {
     A = 0,
@@ -52,5 +50,17 @@ gtree_t *init_gtree_node();
  *      errcode  otherwise
  */
 void destroy_gtree( gtree_t *node );
+
+/**
+ * prunes the gtree of extraneous nodes. That is:
+ *
+ * if a node has only one child, and that child has the same number of hits
+ * as the parent, then no additional information is carried in that child
+ * node and it can be pruned from the gtree.
+ *
+ * @args:
+ *      node - a pointer to a node from which to prune all subtrees.
+ */
+void prune_gtree ( gtree_t *node );
 
 #endif

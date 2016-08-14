@@ -88,7 +88,7 @@ int build_gtree( char *ix_file,
     while ((c = bufgetc(in)) != EOF) {
         iter++; 
 
-        if (iter % 10 == 0) {
+        if (iter % 100000 == 0) {
             iter = 0;
             printf("Working at desc:%s, pos:%ld, window:%ld\n",
                     descs[*n_descs - 1], cur_pos, cur_window_size);
@@ -291,9 +291,9 @@ gtree_t *_deserialize_gtree( FILE *in, ix_t *ix ) {
     if ( !has_data ) {
         return NULL;
     }
-
-    gtree_t *node = init_gtree_node();
     
+    gtree_t *node = init_gtree_node();
+
     char too_full;
     fread(&too_full, sizeof(char), 1, in);
     if (too_full) {
@@ -350,6 +350,7 @@ ix_t *deserialize_ix( char *ixfile ) {
     }
 
     // read gtree
+    free(ix->root);     // required since init_ix() alloc's a node
     ix->root = _deserialize_gtree(in, ix);
 
     fclose(in);

@@ -17,7 +17,7 @@
 #define MAX_DESC_LEN 100
 
 // maximum window size to search during gtree index construction.
-#define MAX_WINDOW_SIZE 10
+#define MAX_WINDOW_SIZE 40
 
 typedef struct gtreeix {
     gtree_t *root;      // root of gtree index
@@ -178,7 +178,6 @@ int serialize_ix( ix_t *ix, char *outfile );
  *      NULL if there is an error during index deserialization
  */
 ix_t *deserialize_ix( char *ixfile );
-
 
 /**
  * prints some information about the gtree index supplied to STDOUT
