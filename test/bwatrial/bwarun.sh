@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# ===== bt2run.sh 
+# ===== bwarun.sh 
 #
-# simple test script to run for setting up a basic bowtie2 alignment with the
+# simple test script to run for setting up a basic bwa alignment with the
 # material provided in the git repository.
 #
 # assumes the following relative directory structure:
-#       bt2run.sh
+#       bwarun.sh
 #       ix (initially empty)
 #       out (initially empty)
 #       reads
@@ -23,19 +23,20 @@ set -e
 rm -rf ix out stat
 mkdir -p ix out stat
 
-bowtie2-build ref/lambda_virus.fa ix/lambda_virus
+bwa index -p ix/lambda_virus ref/lambda_virus.fa
 
 # single
-bowtie2 -x ix/lambda_virus -U reads/reads_1.fq \
-		-S out/reads_1.sam 2>stat/reads_1.runstats
+bwa mem ix/lambda_virus reads/reads_1.fq \
+		 >out/reads_1.sam 2>stat/reads_1.runstats
 
 # longreads
-bowtie2 -x ix/lambda_virus -U reads/longreads.fq \
-		-S out/longreads.sam 2>stat/longreads.runstats
+bwa mem ix/lambda_virus reads/longreads.fq \
+		 >out/longreads.sam 2>stat/longreads.runstats
 
 # paired-end
-bowtie2 -x ix/lambda_virus -1 reads/reads_1.fq -2 reads/reads_2.fq \
-		-S out/reads-pe.sam 2>stat/reads-pe.runstats
+bwa mem ix/lambda_virus \
+			reads/reads_1.fq reads/reads_2.fq \
+		 	>out/reads-pe.sam 2>stat/reads-pe.runstats
 
 # do post-processing to get BAM files for samtools
 for f in out/*.sam
