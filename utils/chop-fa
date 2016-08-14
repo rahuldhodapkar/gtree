@@ -15,10 +15,14 @@ the output directory.
 Options:
   --in                              the input file in FASTA format, <STDIN>
                                     if not specified
+
   --out                             the ouput directory base for chopped files
+
   --norm                            if provided, normalize all output to the
                                     minimal alphabet {A,T,C,G}
+
   --help                            print this message
+
 HERE
 
 my $input_file;             # optional input file
