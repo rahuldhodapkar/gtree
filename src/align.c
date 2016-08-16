@@ -43,6 +43,20 @@ int main(int argc, char *argv[]) {
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
+    //  PRUNE INDEX
+    /////////////////////////////////////////////////////////////////////////
+    printf("Loading index...\n");
+    gettimeofday(&tval_before, NULL);
+    // call to time
+    prune_gtree(ix->root);
+    print_ix_info(ix);
+    //
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+                                        (long int)tval_result.tv_usec);
+
+    /////////////////////////////////////////////////////////////////////////
     //  SERIALIZE INDEX
     /////////////////////////////////////////////////////////////////////////
     printf("Serializing...\n");
@@ -76,20 +90,6 @@ int main(int argc, char *argv[]) {
     gettimeofday(&tval_before, NULL);
     // call to time
     ix = deserialize_ix(ix_fname);
-    print_ix_info(ix);
-    //
-    gettimeofday(&tval_after, NULL);
-    timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
-                                        (long int)tval_result.tv_usec);
-
-    /////////////////////////////////////////////////////////////////////////
-    //  PRUNE INDEX
-    /////////////////////////////////////////////////////////////////////////
-    printf("Loading index...\n");
-    gettimeofday(&tval_before, NULL);
-    // call to time
-    prune_gtree(ix->root);
     print_ix_info(ix);
     //
     gettimeofday(&tval_after, NULL);

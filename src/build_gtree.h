@@ -17,7 +17,7 @@
 #define MAX_DESC_LEN 100
 
 // maximum window size to search during gtree index construction.
-#define MAX_WINDOW_SIZE 40
+#define MAX_WINDOW_SIZE 32
 
 typedef struct gtreeix {
     gtree_t *root;      // root of gtree index

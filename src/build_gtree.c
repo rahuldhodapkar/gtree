@@ -86,14 +86,6 @@ int build_gtree( char *ix_file,
 
     char c;
     while ((c = bufgetc(in)) != EOF) {
-        iter++; 
-
-        if (iter % 100000 == 0) {
-            iter = 0;
-            printf("Working at desc:%s, pos:%ld, window:%ld\n",
-                    descs[*n_descs - 1], cur_pos, cur_window_size);
-        }
-
         if (c == '>' && cur_window_size == 0) { 
             read_desc(in, cur_desc);
             descs = realloc(descs, sizeof(char *)*(*n_descs + 1));
@@ -131,7 +123,7 @@ int build_gtree( char *ix_file,
                 // push back onto buffer
                 bufungetc(window_buffer[i]);
             }
-            cur_pos = cur_pos - cur_window_size;
+            cur_pos = cur_pos - cur_window_size + 1;
             cur_node = root;
             cur_window_size = 0; // delete the first char to move forward
             force_window_rewind = 0;
@@ -168,6 +160,14 @@ int build_gtree( char *ix_file,
                             c, c, descs[*n_descs - 1], cur_pos - cur_window_size); 
                 break;
         }
+
+        if (iter % 1000000 == 0) {
+            iter = 0;
+            printf("Working at desc:%s, pos:%ld, window:%ld\n",
+                    descs[*n_descs - 1], cur_pos, cur_window_size);
+        }
+        iter++; 
+
     } 
 
     *desc_strings = descs;
