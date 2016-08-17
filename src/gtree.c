@@ -87,3 +87,16 @@ void prune_gtree( gtree_t *node ) {
     }
     return;
 }
+
+long count_gtree_nodes( gtree_t *node ) {
+    if (node == NULL) {
+        return 0;
+    }
+
+    long sum = 1;
+    int i;
+    for (i = 0; i < 4; i++) {
+        sum += count_gtree_nodes(node->next[i]);
+    }
+    return sum;
+}

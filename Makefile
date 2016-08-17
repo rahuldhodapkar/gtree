@@ -1,5 +1,6 @@
 CC=gcc
-CFLAGS=-Wall -pedantic -std=c99 -DTRACE -D_BSD_SOURCE
+CFLAGS=-Wall -pedantic -std=c99 -DTRACE -D_BSD_SOURCE \
+		-fno-common
 DEBUG=-ggdb
 
 all: align
@@ -8,13 +9,16 @@ all: align
 debug: CFLAGS += -ggdb
 debug: align
 
-align: src/align.c gtree.o build_gtree.o
+align: src/align.c gtree.o build_gtree.o index.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 build_gtree.o: src/build_gtree.c
 	$(CC) $(CFLAGS) $^ -c -o $@
 
 gtree.o: src/gtree.c
+	$(CC) $(CFLAGS) $^ -c -o $@
+
+index.o: src/index.c
 	$(CC) $(CFLAGS) $^ -c -o $@
 
 .PHONY: clean

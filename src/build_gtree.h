@@ -8,22 +8,14 @@
  * provided by the UCSC genome browser portal are supported.
  */
 
+#include "index.h"
 #include "gtree.h"
+
+#include "types.h"
+#include "consts.h"
 
 #include <stdlib.h>
 #include <stdio.h>
-
-// maximum length for a sequence description in a FASTA file
-#define MAX_DESC_LEN 100
-
-// maximum window size to search during gtree index construction.
-#define MAX_WINDOW_SIZE 32
-
-typedef struct gtreeix {
-    gtree_t *root;      // root of gtree index
-    unsigned int n_descs;        // number of description strings in gtree
-    char **descs;       // access to all description strings in gtree
-} ix_t;
 
 /**
  * "getc()"-like interface to a file, with MAX_WINDOW_SIZE allowable chars of
@@ -111,80 +103,5 @@ int build_gtree( char *ix_file,
  *
  */
 ix_t *build_ix_from_ref_seq( char *ref_filename );
-
-/**
- * malloc all structures to be used by the gtree index. Specifically, any
- * additional descriptions will require a realloc() of the descs pointer
- *
- * @return:
- *      pointer to an allocated an initialized ix_t structure.
- */
-ix_t *init_ix();
-
-/**
- * free all structures used by "ix"
- *
- * @args:
- *      ix - the gtree index to be free'd
- * @return:
- *      0        on success
- *      errcode  otherwise
- */
-int destroy_ix( ix_t *ix );
-
-/**
- * serialize a gtree index into a standard on-disk representation format 
- * that can be ported to avoid the cost of re-computing an index from source.
- * 
- * on-disk format:
- * 
- * IX_SER := HEADER
- *           INT_N_DESC_STRINGS
- *           DESC_STRING (x INT_N_DESC_STRINGS)
- *           GTREE_NODE
- *
- * DESC_STRING := INT_N_LEN
- *                CHAR (x INT_N_LEN)
- *
- * GTREE_NODE := NULL             # no data
- *             | HAS_DATA         # non-zero flag to indicate data
- *               INT_TOO_FULL
- *               INT_N_MATCHES    # determines number of locs in serialization
- *               GTREE_NODE       # A
- *               GTREE_NODE       # C
- *               GTREE_NODE       # T
- *               GTREE_NODE       # G
- *               LOC_STRUCT (x INT_N_MATCHES)
- *
- * @args:
- *      ix - a pointer to the index to be serialized
- *      outfile - the name of the file to serialize the tree to
- * @return:
- *      0        on succcess
- *      errcode  otherwise
- */
-int serialize_ix( ix_t *ix, char *outfile );
-
-/**
- * deserialize a gtree index stored with "serialize_gtree" into an in-memory
- * representation.
- * 
- * @args:
- *      ixfile - the name of the file to read an index from.
- *
- * @return:
- *      a pointer to the deserialized index. When finished, this pointer
- *          should be freed with "destroy_ix"
- *      NULL if there is an error during index deserialization
- */
-ix_t *deserialize_ix( char *ixfile );
-
-/**
- * prints some information about the gtree index supplied to STDOUT
- *
- * @args:
- *      ix - an index pointer to print information about.
- */
-void print_ix_info( ix_t *ix );
 
 #endif

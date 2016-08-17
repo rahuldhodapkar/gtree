@@ -6,28 +6,8 @@
  * used by our sequence alignment algorithm.
  */
 
-#define MAX_LOCS_PER_NODE 4
-
-typedef enum bp {
-    A = 0,
-    C = 1,
-    T = 2,
-    G = 3,
-} bp_t;
-
-typedef struct loc {
-    char *desc;
-    long pos;
-} loc_t;
-
-typedef struct gtree {
-    unsigned int too_full : 1;        // bit flag to ignore intermediate matching
-    unsigned int n_matches: 7;        // number of matches (is_match if >0)
-
-    struct gtree *next[4];            // core gtree lookup array
-
-    loc_t locs [MAX_LOCS_PER_NODE];   // get number of locs to match per contig
-} gtree_t;
+#include "types.h"
+#include "consts.h"
 
 /**
  * malloc's a new gtree node and initializes its "next" array to all null
@@ -62,5 +42,13 @@ void destroy_gtree( gtree_t *node );
  *      node - a pointer to a node from which to prune all subtrees.
  */
 void prune_gtree ( gtree_t *node );
+
+/**
+ * recursively count the numer of nodes in a gtree
+ *
+ * @args:
+ *      node - a pointer to a node from which to count
+ */
+long count_gtree_nodes( gtree_t *node );
 
 #endif
