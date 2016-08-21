@@ -45,10 +45,4 @@ typedef struct gtreeix {
     char **descs;            // access to all description strings in gtree
 } ix_t;
 
-typedef struct __attribute__((__packed__)) gtreebuilder {
-    unsigned int too_full  : 1;
-    unsigned int n_matches : 7;
-    struct gtreebuilder *next[4];
-} gbuild_t;
-
 #endif
