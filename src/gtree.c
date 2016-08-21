@@ -1,6 +1,7 @@
 /**
  * basic C implementation of the gtree builder
  */
+
 #include "gtree.h"
 #include "build_gtree.h"
 

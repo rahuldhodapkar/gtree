@@ -9,6 +9,7 @@
 #include "types.h"
 #include "consts.h"
 
+
 /**
  * malloc's a new gtree node and initializes its "next" array to all null
  * pointers. the "locs" array is left as garbage uninitialized values.
