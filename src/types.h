@@ -7,6 +7,17 @@
 
  #include "consts.h"
 
+typedef struct args {
+    int exec_mode;
+    int verbosity;
+    char *ref_fasta_fn;
+    char *ix_fn;
+    char *out_fn;
+    int out_format;
+    char *in_fn;        // reads input file for first pair or unpaired
+    char *in_fn2;       // reads input file for second pair
+} args_t;
+
 typedef enum bp {
     A = 0,
     C = 1,
