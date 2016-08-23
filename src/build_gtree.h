@@ -79,7 +79,8 @@ int process_base(bp_t base, gtree_t **cur_node_ref, long pos, char *desc);
  *      - no description strings are greater than MAX_DESC_LEN chars long.
  *
  * @args:
- *      ix_file - FASTA file to 
+ *      ix_file - FASTA file to build index from
+ *      ix - gtree index to build
  *      gtree_root - pointer to to assign gtree_root to
  *      desc_strings - pointer to an array of strings;
  *                     assign description strings to for free later
@@ -94,6 +95,25 @@ int build_gtree( char *ix_file,
                  gtree_t **gtree_root, 
                  char ***desc_strings,
                  unsigned int *n_descs );
+
+/**
+ * tests a gtree index for uniqueness against a reference FASTA file by
+ * continuing a build, but not allocating new nodes for new sequences.
+ * 
+ * allows for building gene-specific index targets with small memory footprint
+ * that are still selective against the genome as a whole!
+ *
+ * ***NOTE*** this function will modify the index "ix" passed in.
+ *
+ * @args:
+ *      mask_file - FASTA file to run against index
+ *      ix - gtree index to test
+ *
+ * @return:
+ *      0        on success
+ *      errcode  otherwise
+ */
+int mask_gtree( char *mask_file, ix_t *ix );
 
 /**
  * Construct an index from a basic FASTA file

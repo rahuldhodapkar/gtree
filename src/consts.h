@@ -12,6 +12,8 @@
 // execution modes for aligner used in args_t
 #define EXEC_MODE_BUILD_IX 0
 #define EXEC_MODE_ALIGN 1
+#define EXEC_MODE_MASK_IX 2
+#define EXEC_MODE_PRUNE_IX 3
 
 // output format modes
 #define OUTPUT_FORMAT_SAM 0
