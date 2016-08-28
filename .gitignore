@@ -1,5 +1,5 @@
 # don't save built binaries in repository
-align
+gtree
 
 # editor artefacts
 *.swp
