@@ -16,6 +16,7 @@ typedef struct args {
     int out_format;
     char *in_fn;        // reads input file for first pair or unpaired
     char *in_fn2;       // reads input file for second pair
+    char print_num;     // print num flag for `gtree ix stat`
 } args_t;
 
 typedef enum bp {

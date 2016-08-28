@@ -1,34 +1,49 @@
-/** align.c
- * core driver handling actual alignment
+/** ix_exec.c
+ * core driver for index build, stat, and manipulation
  */
-#include "gtree.h"
-#include "build_gtree.h"
+
+#include "ix_exec.h"
 
 #include "consts.h"
 #include "types.h"
 
+// workhorse functions
+#include "gtree.h"
+#include "build_gtree.h"
+
 #include <time.h>
 #include <sys/time.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
-#define HELPMSG \
-"Usage align [options]\n"\
-"    -b                         index build mode\n"\
-"    -a                         alignment mode\n"\
-"    -maskix                    index mask mode\n"\
-"    -pruneix                    index prune mode\n"\
-"    -v                         verbose mode\n"\
-"    -r [path]                  reference sequence FASTA filename\n"\
-"    -ix [path]                 prebuilt index path for alignment\n"\
-"    -o [path]                  output file, an index file if in index\n"\
-"                               build mode, alignment output otherwise\n"\
-"    -of [format]               output file format - choose either SAM or BAM\n"\
-"                               ** feature not yet supported **\n"\
-"    -i                         input FASTQ file, implies single reads\n"\
-"                               ** feature not yet supported **\n"\
-"    -pe [path1] [path2]        input FASTQ files for paired-end alignment\n"\
-"                               ** feature not yet supported **\n"\
+#define GTREE_IX_HELP_MESSAGE \
+"Usage: gtree ix [options]\n"\
+"\n"\
+"# INDEX BUILD \n"\
+"    Usage: gtree ix build\n"\
+"        -r [path]                 reference sequence FASTA filename\n"\
+"        -o [path]                 prebuilt index path for alignment\n"\
+"\n"\
+"# INDEX MASK \n"\
+"    Usage: gtree ix mask\n"\
+"        -ix [path]                pre-built index to be masked for\n"\
+"                                  selectivity\n"\
+"        -r [path]                 reference sequence FASTA filename\n"\
+"        -o [path]                 prebuilt index path for alignment\n"\
+"\n"\
+"# INDEX PRUNE \n"\
+"    Usage: gtree ix prune\n"\
+"        -ix [path]                pre-built index to be masked for\n"\
+"                                  selectivity\n"\
+"        -o [path]                 prebuilt index path for alignment\n"\
+"\n"\
+"# INDEX STATS \n"\
+"    Usage: gtree ix stat\n"\
+"        -ix [path]                pre-built index to be masked printed\n"\
+"        -o [path]                 prebuilt index path for alignment\n"\
+"        -n                        print # of nodes in gtree to report on\n"\
+"\n"\
 "\n"
 
 int validate_args(args_t *args) {
@@ -39,8 +54,7 @@ int validate_args(args_t *args) {
     return 0;
 }
 
-int prune_ix(args_t *args) {
-
+int ix_prune(args_t *args) {
     // use POSIX functions for timing harness
     struct timeval tval_before, tval_after, tval_result;
     ix_t *ix;
@@ -87,13 +101,10 @@ int prune_ix(args_t *args) {
     printf("INFO: Serializing done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
-
-
     return 0;
-
 }
 
-int build_ix(args_t *args) {
+int ix_build(args_t *args) {
 
     // use POSIX functions for timing harness
     struct timeval tval_before, tval_after, tval_result;
@@ -145,7 +156,7 @@ int build_ix(args_t *args) {
     return 0;
 }
 
-int mask_ix(args_t *args) {
+int ix_mask(args_t *args) {
 
     // use POSIX functions for timing harness
     struct timeval tval_before, tval_after, tval_result;
@@ -211,7 +222,7 @@ int mask_ix(args_t *args) {
     return 0;
 }
 
-int align_seq(args_t *args) {
+int ix_stat(args_t *args) {
 
     // use POSIX functions for timing harness
     struct timeval tval_before, tval_after, tval_result;
@@ -248,10 +259,11 @@ int align_seq(args_t *args) {
     return 0;
 }
 
-int main(int argc, char *argv[]) {
+int gtree_ix(int argc, char *argv[]) {
     args_t args;
 
-    args.exec_mode = -1;        // invalid initial exec mode
+    // define default args
+    args.exec_mode = -1;
     args.verbosity = VERBOSITY_LEVEL_QUIET;
     args.ref_fasta_fn = 
         args.ix_fn = 
@@ -259,27 +271,26 @@ int main(int argc, char *argv[]) {
         args.in_fn = 
         args.in_fn2 = NULL;
     args.out_format = OUTPUT_FORMAT_SAM;
-
-    args.exec_mode = -1;
- 
-    if (argc <= 1) {
-        printf(HELPMSG);
+    if (argc <= 2) {
+        printf(GTREE_IX_HELP_MESSAGE);
         exit(EXIT_SUCCESS);
     }
 
-    int i = 1;
+    if (strcmp(argv[2], "build") == 0) {
+        args.exec_mode = EXEC_MODE_IX_BUILD;
+    } else if (strcmp(argv[2], "mask") == 0) {
+        args.exec_mode = EXEC_MODE_IX_MASK;
+    } else if (strcmp(argv[2], "prune") == 0) {
+        args.exec_mode = EXEC_MODE_IX_PRUNE;
+    } else if (strcmp(argv[2], "stat") == 0) {
+        args.exec_mode = EXEC_MODE_IX_STAT;
+    }
+
+    int i = 3;
     while (i < argc) {
         if (strcmp("-h", argv[i]) == 0) {
-            printf(HELPMSG);
+            printf(GTREE_IX_HELP_MESSAGE);
             exit(EXIT_SUCCESS);
-        } else if (strcmp("-b", argv[i]) == 0) {
-            args.exec_mode = EXEC_MODE_BUILD_IX;
-        } else if (strcmp("-a", argv[i]) == 0) {
-            args.exec_mode = EXEC_MODE_ALIGN;
-        } else if (strcmp("-maskix", argv[i]) == 0) {
-            args.exec_mode = EXEC_MODE_MASK_IX;
-        } else if (strcmp("-pruneix", argv[i]) == 0) {
-            args.exec_mode = EXEC_MODE_PRUNE_IX;
         } else if (strcmp("-v", argv[i]) == 0) {
             args.verbosity = VERBOSITY_LEVEL_DEBUG;
         } else if (strcmp("-r", argv[i]) == 0) {
@@ -323,37 +334,20 @@ int main(int argc, char *argv[]) {
             }
 
             i++;
-        } else if (strcmp("-i", argv[i]) == 0) {
-            if ( i + 1 >= argc ) {
-                printf("ERROR: no input sequence passed with '-r'\n");
-                exit(EXIT_FAILURE);
-            }
-
-            args.in_fn = argv[i+1]; 
-            i++;
-        } else if (strcmp("-pe", argv[i]) == 0) {
-            if ( i + 2 >= argc ) {
-                printf("ERROR: too few input seqs passed with '-pe'\n");
-                exit(EXIT_FAILURE);
-            }
-
-            args.in_fn = argv[i+1]; 
-            args.in_fn2 = argv[i+2]; 
-            i += 2;
         }
         i++;
     }
 
     validate_args(&args);
 
-    if (args.exec_mode == EXEC_MODE_BUILD_IX) {
-        build_ix(&args);
-    } else if (args.exec_mode == EXEC_MODE_ALIGN) {
-        align_seq(&args);
-    } else if (args.exec_mode == EXEC_MODE_MASK_IX) {
-        mask_ix(&args); 
-    } else if (args.exec_mode == EXEC_MODE_PRUNE_IX) {
-        prune_ix(&args); 
+    if (args.exec_mode == EXEC_MODE_IX_BUILD) {
+        ix_build(&args);
+    } else if (args.exec_mode == EXEC_MODE_IX_MASK) {
+        ix_mask(&args); 
+    } else if (args.exec_mode == EXEC_MODE_IX_PRUNE) {
+        ix_prune(&args); 
+    } else if (args.exec_mode == EXEC_MODE_IX_STAT) {
+        ix_stat(&args);
     } else {
         printf("ERROR: unknown exec_mode option '%d', passed\n", args.exec_mode);
         exit(EXIT_FAILURE);
@@ -362,3 +356,4 @@ int main(int argc, char *argv[]) {
     printf("finished running!\n");
     return 0;
 }
+

@@ -10,10 +10,12 @@
 #define VERBOSITY_LEVEL_DEBUG 1
 
 // execution modes for aligner used in args_t
-#define EXEC_MODE_BUILD_IX 0
-#define EXEC_MODE_ALIGN 1
-#define EXEC_MODE_MASK_IX 2
-#define EXEC_MODE_PRUNE_IX 3
+#define EXEC_MODE_IX_BUILD 0
+#define EXEC_MODE_IX_MASK 1
+#define EXEC_MODE_IX_PRUNE 2
+#define EXEC_MODE_IX_STAT 3
+
+#define EXEC_MODE_ALN 100
 
 // output format modes
 #define OUTPUT_FORMAT_SAM 0
