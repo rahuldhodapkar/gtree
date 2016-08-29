@@ -2,10 +2,8 @@
 
 # === core.t
 #
-# core test suite to ensure that things are working properly at a basic level.
-#
-# NOTE:
-#   qw(.ti0 .ti1 .to0)
+# core test suite to ensure that things are working properly at a 
+# basic level.
 #
 # @author rahuldhodapkar
 # @version 2016-08-27
@@ -14,10 +12,11 @@
 use strict;
 use warnings;
 
-use Test::Simple tests => 10;
+use Test::Simple tests => 12;
 use POSIX qw(mkfifo);
 
 my @test_files = qw/.ti0 .ti1 .ti2 \
+                    .tm0
                     .to0 .to1 .to2 \
                     .to0.prn .to1.prn .to2.prn \
                     .to0.msk .to1.prn .to2.prn \
@@ -47,6 +46,13 @@ open(FILE, '>', '.ti2') or die $!;
 print FILE <<"HERE";
 >chr1
 gggggggggggggggggggggggggggggggga
+HERE
+close(FILE);
+
+open(FILE, '>', '.tm0') or die $!;
+print FILE <<"HERE";
+>chr2
+ggggg
 HERE
 close(FILE);
 
@@ -90,9 +96,17 @@ $out = `./gtree ix prune -ix .to2 -o .to2.prn`;
 ok( $out =~ /nodes: 33/, 'prune index with branching' );
 
 ####################################################
-## TEST INDEX LOAD
+## TEST INDEX MASK
 ####################################################
 
+$out = `./gtree ix mask -r .tm0 -ix .to0 -o .to0.msk`;
+ok( $out =~ /nodes: 32/, 'mask single index window' );
+
+# NOTE:
+#   expected pruned length is 2+ masking seq + 1 for root node
+#                                            + 1 for last selective node
+$out = `./gtree ix prune -ix .to0.msk -o .to0.msk.prn`;
+ok( $out =~ /nodes: 7/, 'mask single index window' );
 
 # clean up test files
 unlink( @test_files );

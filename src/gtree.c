@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 gtree_t *init_gtree_node() { 
     gtree_t *node = malloc(sizeof(gtree_t));
@@ -49,6 +50,23 @@ void destroy_gtree( gtree_t *node ) {
     }
 }
 
+int _fewest_matches_in_subtree( gtree_t *node ) {
+
+    int lowest = node->too_full ? INT_MAX : node->n_matches;
+
+    int i, candidate;
+    for (i = 0; i < 4; i++) {
+        if (node->next[i] != NULL) {
+            candidate = _fewest_matches_in_subtree(node->next[i]);
+            if (candidate < lowest) {
+                lowest = candidate;
+            }
+        }
+    }
+
+    return lowest;
+}
+
 void prune_gtree( gtree_t *node ) {
 
     int i, n_children = 0;
@@ -82,10 +100,15 @@ void prune_gtree( gtree_t *node ) {
 
     // check if number of matches equal
     if (node->n_matches == children[0]->n_matches) {
-        // then we may prune the child
-        node->next[nextpos[0]] = NULL;
-        destroy_gtree(children[0]);
+        if (children[0]->n_matches == _fewest_matches_in_subtree(children[0])) {
+            // then we may prune the child
+            node->next[nextpos[0]] = NULL;
+            destroy_gtree(children[0]);
+        }
     }
+
+    prune_gtree(children[0]);
+
     return;
 }
 
