@@ -28,7 +28,7 @@ gtree.o: src/gtree.c
 index.o: src/index.c
 	$(CC) $(CFLAGS) $^ -c -o $@
 
-.PHONY: clean test
+.PHONY: clean test test-all
 
 CLEAN_TARGETS=gtree gtree-debug *.dSYM *.o
 CLEAN_FLAGS=-rf
@@ -38,4 +38,7 @@ clean:
 
 test:
 	prove test
+
+test-all:
+	prove test test/heavy
 

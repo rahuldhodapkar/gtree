@@ -104,6 +104,7 @@ void prune_gtree( gtree_t *node ) {
             // then we may prune the child
             node->next[nextpos[0]] = NULL;
             destroy_gtree(children[0]);
+            return;
         }
     }
 
