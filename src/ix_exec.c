@@ -41,7 +41,6 @@
 "# INDEX STATS \n"\
 "    Usage: gtree ix stat\n"\
 "        -ix [path]                pre-built index to be masked printed\n"\
-"        -o [path]                 prebuilt index path for alignment\n"\
 "        -n                        print # of nodes in gtree to report on\n"\
 "\n"\
 "\n"
@@ -101,6 +100,21 @@ int ix_prune(args_t *args) {
     printf("INFO: Serializing done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+
+    /////////////////////////////////////////////////////////////////////////
+    //  DESTROY INDEX
+    /////////////////////////////////////////////////////////////////////////
+    printf("Destroying built index...\n");
+    gettimeofday(&tval_before, NULL);
+    // call to time
+    destroy_ix(ix);
+    // 
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+    printf("INFO: Destroying done in %ld.%06ld secs\n\n", 
+                                        (long int)tval_result.tv_sec, 
+                                        (long int)tval_result.tv_usec);
+
     return 0;
 }
 

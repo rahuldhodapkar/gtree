@@ -12,6 +12,7 @@
 ix_t *init_ix() {
     ix_t *ix = malloc(sizeof(ix_t));
     ix->root = init_gtree_node();
+    ix->root->too_full = 1;
     ix->n_descs = 0;
     ix->descs = malloc( sizeof(char *) );
     return ix;
@@ -169,7 +170,7 @@ ix_t *deserialize_ix( char *ixfile ) {
         // INT_N_LEN
         size_t desclen;
         fread(&desclen, sizeof(size_t), 1, in);
-        
+
         // DESC_STRING
         ix->descs[i] = malloc(sizeof(char) * (desclen + 1));
         fread(ix->descs[i], sizeof(char), desclen + 1, in);
