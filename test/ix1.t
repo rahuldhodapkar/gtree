@@ -12,7 +12,7 @@
 use strict;
 use warnings;
 
-use Test::Simple tests => 12;
+use Test::Simple tests => 23;
 use POSIX qw(mkfifo);
 
 my @test_files = qw/.ti0 .ti1 .ti2 \
@@ -62,12 +62,15 @@ close(FILE);
 
 $out = `./gtree ix build -r .ti1 -o .to0`;
 ok( $out =~ /nodes: 32/, 'build single index window' );
+ok( $out !~ /ERROR/, 'build single index window' );
 
 $out = `./gtree ix build -r .ti1 -o .to1`;
 ok( $out =~ /nodes: 32/, 'build index window with duplicate nodes' );
+ok( $out !~ /ERROR/, 'execution has errors' );
 
 $out = `./gtree ix build -r .ti2 -o .to2`;
 ok( $out =~ /nodes: 33/, 'build index with branching' );
+ok( $out !~ /ERROR/, 'execution has errors' );
 
 ####################################################
 ## TEST INDEX LOAD
@@ -75,12 +78,15 @@ ok( $out =~ /nodes: 33/, 'build index with branching' );
 
 $out = `./gtree ix stat -n -ix .to0`;
 ok( $out =~ /nodes: 32/, 'stat single index window' );
+ok( $out !~ /ERROR/, 'execution has errors' );
 
 $out = `./gtree ix stat -n -ix .to1`;
 ok( $out =~ /nodes: 32/, 'stat index window with duplicate nodes' );
+ok( $out !~ /ERROR/, 'execution has errors' );
 
 $out = `./gtree ix stat -n -ix .to2`;
 ok( $out =~ /nodes: 33/, 'stat index with branching' );
+ok( $out !~ /ERROR/, 'execution has errors' );
 
 ####################################################
 ## TEST INDEX PRUNE
@@ -88,12 +94,15 @@ ok( $out =~ /nodes: 33/, 'stat index with branching' );
 
 $out = `./gtree ix prune -ix .to0 -o .to0.prn`;
 ok( $out =~ /nodes: 2/, 'prune single index window' );
+ok( $out !~ /ERROR/, 'execution has errors' );
 
 $out = `./gtree ix prune -ix .to1 -o .to1.prn`;
 ok( $out =~ /nodes: 2/, 'prune index window with duplicate nodes' );
+ok( $out !~ /ERROR/, 'execution has errors' );
 
 $out = `./gtree ix prune -ix .to2 -o .to2.prn`;
 ok( $out =~ /nodes: 33/, 'prune index with branching' );
+ok( $out !~ /ERROR/, 'execution has errors' );
 
 ####################################################
 ## TEST INDEX MASK
@@ -101,12 +110,14 @@ ok( $out =~ /nodes: 33/, 'prune index with branching' );
 
 $out = `./gtree ix mask -r .tm0 -ix .to0 -o .to0.msk`;
 ok( $out =~ /nodes: 32/, 'mask single index window' );
+ok( $out !~ /ERROR/, 'execution has errors' );
 
 # NOTE:
 #   expected pruned length is 2+ masking seq + 1 for root node
 #                                            + 1 for last selective node
 $out = `./gtree ix prune -ix .to0.msk -o .to0.msk.prn`;
 ok( $out =~ /nodes: 7/, 'mask single index window' );
+ok( $out !~ /ERROR/, 'execution has errors' );
 
 # clean up test files
 unlink( @test_files );

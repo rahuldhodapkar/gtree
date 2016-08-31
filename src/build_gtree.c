@@ -47,7 +47,7 @@ int process_base_mask(bp_t base, gtree_t **cur_node_ref, long pos, char *desc) {
     cur_node = cur_node->next[base];
     
     if (cur_node->n_matches < MAX_LOCS_PER_NODE) {
-        cur_node->locs[cur_node->n_matches].desc = desc;
+        cur_node->locs[cur_node->n_matches].desc = NULL;
         cur_node->locs[cur_node->n_matches].pos = pos;
         cur_node->n_matches++;
     }
@@ -226,10 +226,6 @@ int mask_gtree( char *ix_file, ix_t *ix ) {
     while ((c = bufgetc(in)) != EOF) {
         if (c == '>' && cur_window_size == 0) { 
             read_desc(in, cur_desc);
-            ix->descs = realloc(ix->descs, sizeof(char *)*(ix->n_descs + 1));
-            ix->descs[ix->n_descs] = malloc(strlen(cur_desc) + 1);
-            strcpy(ix->descs[ix->n_descs], cur_desc);
-            ix->n_descs += 1;
             cur_pos = 0;
             cur_node = ix->root;
             continue;

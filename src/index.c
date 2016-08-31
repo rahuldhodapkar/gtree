@@ -68,7 +68,7 @@ int _serialize_gtree( gtree_t *node, FILE *out, ix_t *ix ) {
             }
         }
 
-        if (matchpos == -1) {
+        if (matchpos == -1 && node->locs[i].desc != NULL) {
             //assert() somehow
             printf("ERROR: attempting to serialize corrupted gtree\n");
         }
@@ -143,7 +143,9 @@ gtree_t *_deserialize_gtree( FILE *in, ix_t *ix ) {
         // read loc structure
         int descpos;
         fread(&descpos, sizeof(int), 1, in);
-        node->locs[i].desc = ix->descs[descpos];
+
+        node->locs[i].desc = descpos < 0 ? NULL
+                                         : ix->descs[descpos];
 
         fread(&(node->locs[i].pos), sizeof(long), 1, in);
     }
