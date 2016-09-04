@@ -28,7 +28,7 @@ typedef enum bp {
 
 typedef struct loc {
     char *desc;
-    long pos;
+    unsigned long pos;
 } loc_t;
 
 typedef struct gtree {
@@ -45,5 +45,39 @@ typedef struct gtreeix {
     unsigned int n_descs;    // number of description strings in gtree
     char **descs;            // access to all description strings in gtree
 } ix_t;
+
+typedef struct read {
+    char *template_id        // unique id of read template
+                             //   - NULL if anonymous
+    bp_t *seq;               // base pair sequence of read
+    char *phred;             // phred quality of read
+    int len;                 // number of base pairs in read
+    struct read *mate;       // ***OPT*** - pointer to mate pair
+                             //             NULL if single read.
+} read_t;
+
+typedef struct gtreematch {
+    unsigned int match_len;
+    unsigned int n_matches;
+    loc_t *locs;
+} gtmatch_t;
+
+/**
+ * ***NOTE*** all alignments are reported on the "forward" strand of 
+ */
+typedef struct alignment {
+    char *template_id   // unique read template id
+    char *ref;          // reference sequence name
+    unsigned long pos;  // position of alignment start in reference
+    bp_t *seq           // sequence of the template
+    int seq_len         // length of the template sequence
+    int align_len       // length of the aligned sequence
+    char cigar[MAX_CIGAR_STR_LEN];  // concise idiosyncratic gapped alignment report
+} align_t;
+
+typedef struct alignment_result {
+    align_t *alignments;
+    int n_alignments;
+} alnres_t;
 
 #endif
