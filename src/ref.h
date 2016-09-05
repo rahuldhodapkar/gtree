@@ -30,7 +30,15 @@ ref_t *init_ref();
 int destroy_ref(ref_t *ref);
 
 /**
- * Load a reference sequence for use by the aligner.
+ * Load a reference sequence for use by the aligner. Looks for:
+ *
+ *      <ref_file_base> + ".fa"     // reference FASTA file with no newlines
+ *                                  // in sequence lines
+ * 
+ *      <ref_file_base> + ".refix"  // tab-delimited map of reference file and
+ *                                  // fseek() positions by description
+ *
+ * and will automatically create <ref_file_base>.refix if it does not exist
  *
  * @args:
  *      ref_file_base - a path from which to load all associated reference files
@@ -40,6 +48,15 @@ int destroy_ref(ref_t *ref);
  *      NULL if load failed
  */
 ref_t *load_ref(char *ref_file_base);
+
+/**
+ * Print a description of a reference structure to STDOUT, including a list
+ * of the description map and file seek positions
+ *
+ * @args:
+ *      ref - a pointer to the ref structure to be printed
+ */
+ void print_ref_info(ref_t *ref);
 
 /**
  * Copy bp string of "len" from "desc", "pos" to "refstr"
