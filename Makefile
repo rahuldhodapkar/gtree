@@ -6,13 +6,17 @@ DEBUG=-ggdb
 all: gtree
 
 # Target-specific variable values for "debug"
-debug: CFLAGS += -ggdb
-debug: gtree
+debug-symbols: CFLAGS += -ggdb
+debug-symbols: gtree
 
 gtree: src/main_exec.c gtree.o build_gtree.o index.o \
                        ref.o align.o \
-                       ix_exec.o aln_exec.o
+                       ix_exec.o aln_exec.o \
+					   debug.o
 	$(CC) $(CFLAGS) $^ -o $@
+
+debug.o: src/debug.c
+	$(CC) $(CFLAGS) $^ -c -o $@
 
 ix_exec.o: src/ix_exec.c
 	$(CC) $(CFLAGS) $^ -c -o $@
