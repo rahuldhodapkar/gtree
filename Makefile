@@ -10,13 +10,20 @@ debug: CFLAGS += -ggdb
 debug: gtree
 
 gtree: src/main_exec.c gtree.o build_gtree.o index.o \
-					   ix_exec.o aln_exec.o
+                       ref.o align.o \
+                       ix_exec.o aln_exec.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 ix_exec.o: src/ix_exec.c
 	$(CC) $(CFLAGS) $^ -c -o $@
 
 aln_exec.o: src/aln_exec.c
+	$(CC) $(CFLAGS) $^ -c -o $@
+
+ref.o: src/ref.c
+	$(CC) $(CFLAGS) $^ -c -o $@
+
+align.o: src/align.c
 	$(CC) $(CFLAGS) $^ -c -o $@
 
 build_gtree.o: src/build_gtree.c

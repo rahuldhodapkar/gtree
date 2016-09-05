@@ -5,7 +5,9 @@
  * define all types to be used in aligner
  */
 
- #include "consts.h"
+#include "consts.h"
+
+#include <stdio.h> 
 
 typedef struct args {
     int exec_mode;
@@ -47,7 +49,7 @@ typedef struct gtreeix {
 } ix_t;
 
 typedef struct read {
-    char *template_id        // unique id of read template
+    char *template_id;        // unique id of read template
                              //   - NULL if anonymous
     bp_t *seq;               // base pair sequence of read
     char *phred;             // phred quality of read
@@ -63,15 +65,15 @@ typedef struct gtreematch {
 } gtmatch_t;
 
 /**
- * ***NOTE*** all alignments are reported on the "forward" strand of 
+ * ***NOTE*** all alignments are reported on the "forward" strand
  */
 typedef struct alignment {
-    char *template_id   // unique read template id
+    char *template_id;   // unique read template id
     char *ref;          // reference sequence name
     unsigned long pos;  // position of alignment start in reference
-    bp_t *seq           // sequence of the template
-    int seq_len         // length of the template sequence
-    int align_len       // length of the aligned sequence
+    bp_t *seq;           // sequence of the template
+    int seq_len;         // length of the template sequence
+    int align_len;       // length of the aligned sequence
     char cigar[MAX_CIGAR_STR_LEN];  // concise idiosyncratic gapped alignment report
 } align_t;
 
@@ -79,5 +81,18 @@ typedef struct alignment_result {
     align_t *alignments;
     int n_alignments;
 } alnres_t;
+
+typedef struct desc_loc_map {
+    FILE *ref_file;
+    char desc[MAX_DESC_LEN];
+    unsigned long pos;
+    struct desc_loc_map *next;
+} desc_loc_map_t;
+
+typedef struct reference {
+    desc_loc_map_t *desc_map;
+    char cur_desc[MAX_DESC_LEN];
+    unsigned long cur_pos;
+} ref_t;
 
 #endif

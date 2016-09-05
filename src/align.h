@@ -2,6 +2,9 @@
  * perform genome alignment against gtree index.
  */
 
+#include "types.h"
+#include "consts.h"
+
 /**
  * seed matches of single read against reference sequence with a smaller
  * exact match
@@ -40,10 +43,11 @@ int extend_matches(read_t *read, ix_t *ix, alnres_t *res);
  * @args: 
  *      read - a single quality-bearing read
  *      ix - a gtree index built on the targeted region
+ *      ref - a structure with an access interface to the reference sequence
  *      res - an alignment result structure into which to write results
  *
  * @return:
  *      0        on succcess
  *      errcode  otherwise
  */
-int align_single_read(read_t *read, ix_t *ix, alnres_t *res);
+int align_single_read(read_t *read, ix_t *ix, ref_t *ref, alnres_t *res);
