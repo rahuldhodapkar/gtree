@@ -5,6 +5,8 @@
 #include "index.h"
 #include "gtree.h"
 
+#include "debug.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -70,7 +72,7 @@ int _serialize_gtree( gtree_t *node, FILE *out, ix_t *ix ) {
 
         if (matchpos == -1 && node->locs[i].desc != NULL) {
             //assert() somehow
-            printf("ERROR: attempting to serialize corrupted gtree\n");
+            DIE("attempting to serialize corrupted gtree");
         }
 
         // write loc structure

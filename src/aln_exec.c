@@ -4,6 +4,8 @@
 
 #include "aln_exec.h"
 
+#include "debug.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -40,6 +42,7 @@ int gtree_aln(int argc, char *argv[]) {
     } else {
         printf("ERROR: 'gtree aln' functions not yet implemented\n");
         printf(GTREE_ALN_HELP_MESSAGE);
-        exit(EXIT_FAILURE);
+        DIE("Invalid command line options");
     }
+    return 0;
 }

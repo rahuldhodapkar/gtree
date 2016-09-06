@@ -2,6 +2,7 @@
  * encapsulate methods for building a gtree from a reference genome file.
  */
 #include "build_gtree.h"
+#include "debug.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -295,7 +296,7 @@ int mask_gtree( char *ix_file, ix_t *ix ) {
                              ix->descs[ix->n_descs - 1]);
                 break; 
             default:
-                printf("ERROR - encountered illegal character [%c|%d] in %s:%ld",
+                printf("WARN: encountered illegal character [%c|%d] in %s:%ld",
                             c, c, ix->descs[ix->n_descs - 1],
                             cur_pos - cur_window_size); 
                 break;
