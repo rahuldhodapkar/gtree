@@ -46,7 +46,7 @@
 "\n"\
 "\n"
 
-int validate_args(args_t *args) {
+int validate_ix_args(args_t *args) {
     if (args->exec_mode < 0) {
         printf("ERROR: no execution mode chosen, use build or align\n");
         DIE("Invalid command line options");
@@ -353,7 +353,7 @@ int gtree_ix(int argc, char *argv[]) {
         i++;
     }
 
-    validate_args(&args);
+    validate_ix_args(&args);
 
     if (args.exec_mode == EXEC_MODE_IX_BUILD) {
         ix_build(&args);

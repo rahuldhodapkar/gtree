@@ -3,7 +3,12 @@
 
 /** consts.h
  * define all constants to be used in aligner
+ *
+ * also includes basic limits from <limits.h>
  */
+
+#include <limits.h>
+
 
 /////////////////////////////////////////////////////////////////////////
 // ERROR CODES + DEBUG

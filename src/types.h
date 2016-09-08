@@ -84,6 +84,7 @@ typedef struct alignment_result {
 
 typedef struct desc_loc_map {
     FILE *ref_file;
+    char ref_filename[FILENAME_MAX];
     char desc[MAX_DESC_LEN];
     unsigned long pos;
     struct desc_loc_map *next;
