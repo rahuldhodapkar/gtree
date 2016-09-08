@@ -62,7 +62,8 @@
 
 #define MAX_CIGAR_STR_LEN 200
 
-
-
+// define how much padding should be done when pulling reference
+// sequence from a seeded alignment
+#define REF_PADDING_LEN 50
 
 #endif

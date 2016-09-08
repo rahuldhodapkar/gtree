@@ -24,8 +24,9 @@ typedef struct args {
 typedef enum bp {
     A = 0,
     C = 1,
-    T = 2,
-    G = 3,
+    G = 2,
+    T = 3,
+    N = 4
 } bp_t;
 
 typedef struct loc {
@@ -49,9 +50,10 @@ typedef struct gtreeix {
 } ix_t;
 
 typedef struct read {
-    char *template_id;        // unique id of read template
+    char *template_id;       // unique id of read template
                              //   - NULL if anonymous
     bp_t *seq;               // base pair sequence of read
+    char *read_seq;          // char sequence for read
     char *phred;             // phred quality of read
     int len;                 // number of base pairs in read
     struct read *mate;       // ***OPT*** - pointer to mate pair

@@ -3,6 +3,19 @@
  */
 
 #include "align.h"
+#include "ssw.h"
+
+/* This table is used to transform nucleotide letters into numbers. */
+static const int8_t _NT_TABLE[128] = {
+    4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
+    4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
+    4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
+    4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
+    4, 0, 4, 1,  4, 4, 4, 2,  4, 4, 4, 4,  4, 4, 4, 4,
+    4, 4, 4, 4,  3, 3, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
+    4, 0, 4, 1,  4, 4, 4, 2,  4, 4, 4, 4,  4, 4, 4, 4,
+    4, 4, 4, 4,  3, 3, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4
+};
 
 int _get_longest_exact_match(bp_t *bp, int max_len, gtree_t *node,
                                                     gtmatch_t *res) {
@@ -74,6 +87,48 @@ int seed_matches(read_t *read, ix_t *ix, alnres_t *res) {
 
 int extend_matches(read_t *read, ix_t *ix, alnres_t *res) {
 
+    // read in bp_t* form
+    // read->seq;
+
+    int8_t read_num[read->len];
+
+    int i;
+    for (i = 0; i < read->len; i++) {
+        read_num[i] = read->seq[i];
+    }
+
+    // reference in parsable form
+    int8_t ref_num[read->len + 2 * REF_PADDING_LEN];
+    
+    // reference as characters.
+    char ref_seq[read->len + 2 * REF_PADDING_LEN];
+    for (i = 0; i < read->len + 2 * REF_PADDING_LEN; i++)  ref_seq[i] = '\0';
+
+    int32_t l, m, k, 
+            match = 2, 
+            mismatch = 2, 
+            gap_open = 3, 
+            gap_extension = 1;
+
+    s_align* result;
+    s_profile* profile;
+
+    int8_t* mat = (int8_t*)calloc(25, sizeof(int8_t));
+    for (l = k = 0; l < 4; ++l) {
+        for (m = 0; m < 4; ++m) mat[k++] = l == m ? match : - mismatch;    
+                                          /* weight_match : -weight_mismatch */
+        mat[k++] = 0; // ambiguous base: no penalty
+    }
+    for (m = 0; m < 5; ++m) mat[k++] = 0;
+
+    profile = ssw_init(read_num, 15, mat, 5, 2);
+    result = ssw_align (profile, ref_num, 39, gap_open, gap_extension, 1, 0, 0, 15);
+
+    ssw_write(result, ref_seq, read->read_seq, _NT_TABLE);
+
+    align_destroy(result);
+    init_destroy(profile);
+    free(mat);
     return 0;
     // reference seq
 }

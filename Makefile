@@ -12,6 +12,7 @@ debug-symbols: gtree
 gtree: src/main_exec.c gtree.o build_gtree.o index.o \
                        ref.o align.o \
                        ix_exec.o aln_exec.o \
+					   ssw.o \
 					   debug.o
 	$(CC) $(CFLAGS) $^ -o $@
 
@@ -37,6 +38,9 @@ gtree.o: src/gtree.c
 	$(CC) $(CFLAGS) $^ -c -o $@
 
 index.o: src/index.c
+	$(CC) $(CFLAGS) $^ -c -o $@
+
+ssw.o: src/ssw.c
 	$(CC) $(CFLAGS) $^ -c -o $@
 
 .PHONY: clean test test-all
