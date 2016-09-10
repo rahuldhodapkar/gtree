@@ -26,7 +26,8 @@ typedef enum bp {
     C = 1,
     G = 2,
     T = 3,
-    N = 4
+    N = 4,
+    NOBP = 5
 } bp_t;
 
 typedef struct loc {
@@ -88,7 +89,8 @@ typedef struct desc_loc_map {
     FILE *ref_file;
     char ref_filename[FILENAME_MAX];
     char desc[MAX_DESC_LEN];
-    unsigned long pos;
+    unsigned long contig_start;
+    unsigned long contig_len;
     struct desc_loc_map *next;
 } desc_loc_map_t;
 

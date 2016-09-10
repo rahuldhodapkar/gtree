@@ -4,6 +4,8 @@
 
 #include "align.h"
 #include "ssw.h"
+#include "debug.h"
+#include "ref.h"
 
 /* This table is used to transform nucleotide letters into numbers. */
 static const int8_t _NT_TABLE[128] = {
@@ -85,33 +87,54 @@ int seed_matches(read_t *read, ix_t *ix, alnres_t *res) {
     //TODO: copy seeds into alignment result as seed alignments
 }
 
-int extend_matches(read_t *read, ix_t *ix, alnres_t *res) {
+int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long pos) {
 
     // read in bp_t* form
     // read->seq;
-
-    int8_t read_num[read->len];
-
-    int i;
-    for (i = 0; i < read->len; i++) {
-        read_num[i] = read->seq[i];
-    }
+    int32_t l, m, k, i, 
+        match = 2, 
+        mismatch = 2, 
+        gap_open = 3, 
+        gap_extension = 1;
 
     // reference in parsable form
+    unsigned long ref_bp_len = read->len + 2 * REF_PADDING_LEN;
+    bp_t ref_bp_string[ref_bp_len];
+    refcpy(ref, desc, pos, ref_bp_len, ref_bp_string, &ref_bp_len);
+
     int8_t ref_num[read->len + 2 * REF_PADDING_LEN];
-    
+    char ref_seq[read->len + 2 * REF_PADDING_LEN + 1]; // +1 for '\0'
+
+    for (i = 0; i < read->len + 2 * REF_PADDING_LEN; i++) {
+        ref_num[i] = ref_bp_string[i];
+        switch (ref_bp_string[i]) {
+            case A:
+                ref_seq[i] = 'A';
+                break;
+            case C:
+                ref_seq[i] = 'C';
+                break;
+            case G:
+                ref_seq[i] = 'G';
+                break;
+            case T:
+                ref_seq[i] = 'T';
+                break;
+            case N:
+                ref_seq[i] = 'N';
+                break;
+            default:
+                DIE("Unable to marshall bp_t -> char");
+        }
+    }
+    ref_seq[read->len + 2 * REF_PADDING_LEN] = '\0';
+
+    int8_t read_num[read->len];
+    for (i = 0; i < read->len; i++) read_num[i] = read->seq[i];
+
     // reference as characters.
-    char ref_seq[read->len + 2 * REF_PADDING_LEN];
-    for (i = 0; i < read->len + 2 * REF_PADDING_LEN; i++)  ref_seq[i] = '\0';
-
-    int32_t l, m, k, 
-            match = 2, 
-            mismatch = 2, 
-            gap_open = 3, 
-            gap_extension = 1;
-
-    s_align* result;
-    s_profile* profile;
+    s_align *result;
+    s_profile *profile;
 
     int8_t* mat = (int8_t*)calloc(25, sizeof(int8_t));
     for (l = k = 0; l < 4; ++l) {

@@ -33,7 +33,8 @@ desc_loc_map_t *_init_desc_loc_map() {
     for (i = 0; i < MAX_DESC_LEN; i++) {
         ret->desc[i] = '\0';
     }
-    ret->pos = 0;
+    ret->contig_start = 0;
+    ret->contig_len = 0;
     ret->next = NULL;
 
     return ret;
@@ -62,6 +63,7 @@ desc_loc_map_t *_build_refix_from_ref(char *ref_filename) {
 
     char c;
     unsigned long pos = 0;
+    unsigned long ctglen = 0;
     desc_loc_map_t *ret = NULL,
                    *swp = NULL,
                    *cur = NULL;
@@ -72,6 +74,7 @@ desc_loc_map_t *_build_refix_from_ref(char *ref_filename) {
     while ( (c = fgetc(ref)) != EOF ) {
 
         pos++;
+        ctglen++;
 
         if (c == '>') {
             read_desc(ref, desc);
@@ -82,11 +85,13 @@ desc_loc_map_t *_build_refix_from_ref(char *ref_filename) {
             strcpy(cur->ref_filename, ref_filename);
             strcpy(cur->desc, desc);
             cur->ref_file = fopen(cur->ref_filename, "r");
-            cur->pos = pos;
+            cur->contig_start = pos;
 
             if (swp != NULL) {
                 swp->next = cur;
+                swp->contig_len = ctglen - 1;
             }
+            ctglen = 0;
 
             if (ret == NULL) {
                 ret = cur;
@@ -122,7 +127,8 @@ int _serialize_refix(desc_loc_map_t *refix, char *refix_filename) {
         fwrite(&(cur->ref_filename), sizeof(char), ref_filename_len, out);
         fwrite(&desc_len, sizeof(int), 1, out);
         fwrite(&(cur->desc), sizeof(char), desc_len, out);   
-        fwrite(&(cur->pos), sizeof(unsigned long), 1, out);
+        fwrite(&(cur->contig_start), sizeof(unsigned long), 1, out);
+        fwrite(&(cur->contig_len), sizeof(unsigned long), 1, out);
 
         cur = cur->next;
     }
@@ -154,7 +160,8 @@ desc_loc_map_t *_deserialize_refix(char *refix_filename) {
         fread(&(cur->ref_filename), sizeof(char), ref_filename_len, in);
         fread(&desc_len, sizeof(int), 1, in);
         fread(&(cur->desc), sizeof(char), desc_len, in);
-        fread(&(cur->pos), sizeof(unsigned long), 1, in);
+        fread(&(cur->contig_start), sizeof(unsigned long), 1, in);
+        fread(&(cur->contig_len), sizeof(unsigned long), 1, in);
 
         cur->ref_file = fopen(cur->ref_filename, "r");
 
@@ -209,16 +216,83 @@ ref_t *load_ref(char *ref_file_base) {
     return ret;
 }
 
+int refcpy( ref_t *ref,
+            char *desc, unsigned long pos, unsigned int len, 
+            bp_t *refstr, unsigned long *refstrlen) {
+
+    // TODO : copy reference sequence over.
+    desc_loc_map_t *match = NULL;
+    desc_loc_map_t *cur = ref->desc_map;
+
+    while (cur != NULL) {
+        if (strcmp(cur->desc, desc) == 0) {
+            match = cur;
+            break;
+        }
+        cur = cur->next;
+    }
+
+    if (match == NULL) {
+        fprintf(stderr, "ERROR: desc '%s' not found in reference\n", desc);
+        DIE("Invalid contig description passed");
+    }
+
+    fseek(match->ref_file, match->contig_start + pos, SEEK_SET);
+
+    int i;
+    unsigned int cur_pos = pos;
+    for (i = 0; i < len; i++) {
+        bp_t bp = NOBP;
+
+        if ( cur_pos < match->contig_len ) {
+            char c = getc(match->ref_file);
+
+            switch (c) {
+                case 'a':
+                case 'A':
+                    bp = A;
+                    break;
+                case 'c':
+                case 'C':
+                    bp = C;
+                    break;
+                case 'g':
+                case 'G':
+                    bp = G;
+                    break;
+                case 't':
+                case 'T':
+                    bp = T;
+                case 'n':
+                case 'N':
+                    bp = N;
+                    break;
+                default:
+                    fprintf(stderr, "ERROR: Invalid character %c (%d) found at %s:%lu\n",
+                                                c, c, desc, pos + match->contig_start);
+                    DIE("Invalid character in reference");
+            }
+        } else {
+            *refstrlen = cur_pos - pos;
+            break;  // end copy
+        }
+        refstr[i] = bp;
+        cur_pos++;
+    }
+
+    return 0;
+}
+
 void print_ref_info(ref_t *ref) {
     desc_loc_map_t *cur = ref->desc_map;
     int n_entries = 0;
 
     while (cur != NULL) {
-        printf("%s\t%s\t%lu\n", cur->ref_filename, cur->desc, cur->pos);
+        printf("%s\t%s\t%lu\t%lu\n", cur->ref_filename, cur->desc, 
+                                     cur->contig_start, cur->contig_len);
         cur = cur->next;
         n_entries++;
     }
 
     printf("Reference contains [%d] seqs\n", n_entries);
 }
-

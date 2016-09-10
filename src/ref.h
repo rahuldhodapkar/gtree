@@ -61,16 +61,25 @@ ref_t *load_ref(char *ref_file_base);
 /**
  * Copy bp string of "len" from "desc", "pos" to "refstr"
  *
+ * if (desc, pos, len) results in a requested sequence longer than available,
+ * the string written to "refstr" may be shorter than "len". In such a case,
+ * the string will be padded with "N" wherever a reference character is not
+ * available.
+ *
  * @args:
+ *      ref - reference from which to copy string
  *      desc - description of reference sequence to fetch
  *      pos - position in reference to fetch from
  *      len - length of string to copy
  *      refstr - bp string loc to copy to
+ *      refstrlen - 
  *
  * @return:
  *      0        on success
  *      errcode  otherwise
  */
-int refcpy(char *desc, unsigned long pos, unsigned int len, bp_t *refstr);
+int refcpy( ref_t *ref,
+            char *desc, unsigned long pos, unsigned int len, 
+            bp_t *refstr, unsigned long *refstrlen);
 
 #endif
