@@ -67,6 +67,9 @@ int aln_simple(args_t *args) {
     printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
     
+
+
+    
     return 0;
 }
 

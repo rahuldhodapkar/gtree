@@ -5,6 +5,21 @@
 #include "types.h"
 #include "consts.h"
 
+
+/**
+ * load read from FASTQ to internal data structure
+ *
+ * @args:
+ *      read_file - a file containing FASTQ reads
+ *      read - a struct to write read data into
+ *
+ * @return:
+ *      1       if a read was successfully parsed
+ *      0       at EOF
+ *
+ */
+int get_next_read(FILE *read_file, read_t *read);
+
 /**
  * seed matches of single read against reference sequence with a smaller
  * exact match

@@ -19,6 +19,25 @@ static const int8_t _NT_TABLE[128] = {
     4, 4, 4, 4,  3, 3, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4
 };
 
+bp_t char_to_bp(char c) {
+        switch (c) {
+            case 'a':
+            case 'A':
+                return A;
+            case 'c':
+            case 'C':
+                return C;
+            case 'g':
+            case 'G':
+                return G;
+            case 't':
+            case 'T':
+                return T;
+            default:
+                return N;
+        }
+}
+
 int _get_longest_exact_match(bp_t *bp, int max_len, gtree_t *node,
                                                     gtmatch_t *res) {
     int pos = 0;
@@ -34,6 +53,58 @@ int _get_longest_exact_match(bp_t *bp, int max_len, gtree_t *node,
         res->match_len++;
         res->n_matches = node->too_full ? 0    : node->n_matches;
         res->locs =      node->too_full ? NULL : node->locs;
+    }
+
+    return 0;
+}
+
+int gen_next_read(FILE *read_file, read_t *read) {
+    char c;
+    char fastq_line = 1;
+    int cur_line_pos = 0;
+
+    while ( (c = fgetc(read_file)) != EOF) {
+        if (c == '\n') {
+            if (fastq_line == 1) {
+                read->template_id[cur_line_pos] = '\0';
+            }
+
+            if (fastq_line == 2) {
+                read->len = cur_line_pos;
+            }
+
+            fastq_line++;
+            cur_line_pos = 0;
+        }
+        if (fastq_line > 4) {
+            // read processing completed.
+            return 1;
+        }
+
+        if (fastq_line == 1) {
+            // header line
+            if (cur_line_pos == 0) {
+                // skip initial character
+                if (c != '@') DIE("Malformed FASTQ file");
+            }
+            read->template_id[cur_line_pos - 1] = c;
+        } else if ( fastq_line == 2 ) {
+            if (cur_line_pos >= read->malloc_len) {
+                read->malloc_len++;
+                // realloc key pointers
+                realloc(read->seq, sizeof(bp_t) * read->malloc_len++);
+                realloc(read->read_seq, sizeof(char) * read->malloc_len++);
+                realloc(read->phred, sizeof(char) * read->malloc_len++);
+            }
+
+            read->seq[cur_line_pos] = char_to_bp(c);
+            read->read_seq[cur_line_pos] = toupper(c);
+
+        } else if (fastq_line == 4) {
+            read->phred[cur_line_pos] = c;
+        }
+
+        cur_line_pos++;
     }
 
     return 0;

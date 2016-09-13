@@ -51,14 +51,13 @@ typedef struct gtreeix {
 } ix_t;
 
 typedef struct read {
-    char *template_id;       // unique id of read template
-                             //   - NULL if anonymous
-    bp_t *seq;               // base pair sequence of read
-    char *read_seq;          // char sequence for read
-    char *phred;             // phred quality of read
-    int len;                 // number of base pairs in read
-    struct read *mate;       // ***OPT*** - pointer to mate pair
-                             //             NULL if single read.
+    char template_id[MAX_DESC_LEN];       // unique id of read template
+                                          // - empty string if anonymous
+    bp_t *seq;                            // base pair sequence of read
+    char *read_seq;                       // char sequence for read
+    char *phred;                          // phred quality of read
+    int len;                              // number of base pairs in read
+    int malloc_len;                       // malloc'ed seq length
 } read_t;
 
 typedef struct gtreematch {
