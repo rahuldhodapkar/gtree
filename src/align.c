@@ -20,22 +20,40 @@ static const int8_t _NT_TABLE[128] = {
 };
 
 bp_t char_to_bp(char c) {
-        switch (c) {
-            case 'a':
-            case 'A':
-                return A;
-            case 'c':
-            case 'C':
-                return C;
-            case 'g':
-            case 'G':
-                return G;
-            case 't':
-            case 'T':
-                return T;
-            default:
-                return N;
-        }
+    switch (c) {
+        case 'a':
+        case 'A':
+            return A;
+        case 'c':
+        case 'C':
+            return C;
+        case 'g':
+        case 'G':
+            return G;
+        case 't':
+        case 'T':
+            return T;
+        default:
+            return N;
+    }
+}
+
+char bp_to_char (bp_t b) {
+    switch (b) {
+        case A:
+            return 'A';
+        case C:
+            return 'C';
+        case G:
+            return 'G';
+        case T:
+            return 'T';
+        case N:
+            return 'N';
+        default:
+            DIE("Unable to marshall bp_t -> char");
+            return '\0';
+    }
 }
 
 int _get_longest_exact_match(bp_t *bp, int max_len, gtree_t *node,
@@ -178,25 +196,7 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
 
     for (i = 0; i < read->len + 2 * REF_PADDING_LEN; i++) {
         ref_num[i] = ref_bp_string[i];
-        switch (ref_bp_string[i]) {
-            case A:
-                ref_seq[i] = 'A';
-                break;
-            case C:
-                ref_seq[i] = 'C';
-                break;
-            case G:
-                ref_seq[i] = 'G';
-                break;
-            case T:
-                ref_seq[i] = 'T';
-                break;
-            case N:
-                ref_seq[i] = 'N';
-                break;
-            default:
-                DIE("Unable to marshall bp_t -> char");
-        }
+        ref_seq[i] = bp_to_char(ref_bp_string[i]);
     }
     ref_seq[read->len + 2 * REF_PADDING_LEN] = '\0';
 
