@@ -99,6 +99,8 @@ desc_loc_map_t *_build_refix_from_ref(char *ref_filename) {
         }
     }
 
+    fclose(ref);
+
     return ret;
 }
 

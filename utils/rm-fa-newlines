@@ -1,0 +1,102 @@
+#!/usr/bin/perl
+
+use warnings;
+use Getopt::Long;
+Getopt::Long::Configure (qw{bundling no_auto_abbrev no_ignore_case_always});
+
+my $usage_string = <<"HERE";
+usage: rm-fa-newlines [--in <FASTA>] [--out <CLEANED_FASTA>] [--norm]
+
+rm-fa-newlines cleans a FASTA file by removing all newlines that occur
+between sequence strings, and ensuring that *exactly one*header line is
+present before each sequence line
+
+Options:
+  --in                              the input file in FASTA format, <STDIN>
+                                    if not specified
+
+  --out                             the ouput cleaned FASTA file. <STDOUT>
+                                    if not specified
+
+  --norm                            if provided, normalize all output to the
+                                    minimal alphabet {A,C,G,T,N}
+
+  --help                            print this message
+
+HERE
+
+my $input_file = 0;      # optional input file
+my $output_file = 0;     # optional output file
+my $m_norm = 0;
+my $help = 0;
+
+GetOptions ('in|i=s'         => \$input_file,
+            'out|o=s'        => \$output_file,
+            'norm|n'         => \$m_norm,
+            'help|h'         => \$help);
+
+if ( $help ) {
+    print $usage_string;
+    exit 0;
+}
+
+my $in  = undef;
+my $out = undef;
+
+if ($input_file) { 
+    open ($in, "<", $input_file)
+        or die "ERROR: failed to open file $input_file for writing: $!";
+}
+else {
+    $in = *STDIN;
+}
+
+if ($output_file) { 
+    open ($out, ">", $output_file)
+        or die "ERROR: failed to open file $output_file for writing: $!";
+} 
+else {
+    $out = *STDOUT;
+}
+
+my $title = "";
+my $processed_chars;
+while (my $char = getc($in)) {
+    $processed_chars++;
+
+    if (not $out eq *STDOUT and $processed_chars % 1000000 == 0) {
+        print "= $title ============================\n";
+        print "processed: $processed_chars\n";
+        print "=========================================\n";
+    }
+
+    if ($char eq "\n") {
+        next;
+    }
+    elsif ($char eq ">") {
+        $title = readline($in);
+        print $out ">$title";
+    }
+    elsif ($char =~ /[ACGTN]/) {
+        print $out $char;
+    } 
+    elsif ($char =~ /[acgtn]/) {
+        if ($m_norm) {
+            print $out uc($char);
+        }
+        else {
+            print $out $char;
+        }
+    }
+    else {
+        print STDERR "ERROR: invalid character [$char] found\n"; 
+    }
+}
+
+if (not $out eq *STDOUT) { 
+    print "===========ALL DONE!=====================\n";
+    print "processed: $processed_chars\n";
+    print "=========================================\n";
+}
+
+

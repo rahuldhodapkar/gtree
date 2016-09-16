@@ -7,6 +7,7 @@
 #include "debug.h"
 #include "index.h"
 #include "ref.h"
+#include "align.h"
 
 #include <time.h>
 #include <sys/time.h>
@@ -28,6 +29,29 @@
 "                               ** feature not yet supported **\n"\
 "    -h                         print this message and quit\n"\
 "\n"
+
+read_t *_init_read() {
+    read_t *ret = malloc(sizeof(read_t));
+
+    ret->malloc_len = 0;
+    ret->seq = NULL;
+    ret->read_seq = NULL;
+    ret->phred = NULL;
+    ret->len = 0;
+
+    return ret;
+}
+
+int _destroy_read(read_t *read) {
+
+    if (read->seq != NULL)       free(read->seq);
+    if (read->read_seq != NULL)  free(read->read_seq);
+    if (read->phred != NULL)     free(read->phred);
+    free(read);
+
+    return 0;
+}
+
 
 int validate_aln_args(args_t *args) {
     return 0;
@@ -66,10 +90,54 @@ int aln_simple(args_t *args) {
     timersub(&tval_after, &tval_before, &tval_result);
     printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
-    
 
+    /////////////////////////////////////////////////////////////////////////
+    //  ALIGN READS
+    /////////////////////////////////////////////////////////////////////////
+    printf("Aligning reads...\n");
+    gettimeofday(&tval_before, NULL);
+    // call to time
+    FILE *reads_file = fopen(args->in_fn, "r");
+    read_t *read = _init_read();
+    alnres_t aln;
 
-    
+    while (get_next_read(reads_file, read)) {
+        align_single_read(read, ix, ref, &aln);
+    }
+    //
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+                                        (long int)tval_result.tv_usec);
+
+    _destroy_read(read);
+
+    /////////////////////////////////////////////////////////////////////////
+    //  DESTROY INDEX
+    /////////////////////////////////////////////////////////////////////////
+    printf("Destroying index...\n");
+    gettimeofday(&tval_before, NULL);
+    // call to time
+    destroy_ix(ix);
+    //
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+                                        (long int)tval_result.tv_usec);
+
+    /////////////////////////////////////////////////////////////////////////
+    //  DESTROY REFERENCE
+    /////////////////////////////////////////////////////////////////////////
+    printf("Destroying ref...\n");
+    gettimeofday(&tval_before, NULL);
+    // call to time
+    destroy_ref(ref);
+    //
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+                                        (long int)tval_result.tv_usec);
+
     return 0;
 }
 

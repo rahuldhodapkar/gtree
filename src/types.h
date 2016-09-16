@@ -71,7 +71,7 @@ typedef struct gtreematch {
  */
 typedef struct alignment {
     char *template_id;   // unique read template id
-    char *ref;          // reference sequence name
+    char *desc;          // reference sequence name
     unsigned long pos;  // position of alignment start in reference
     bp_t *seq;           // sequence of the template
     int seq_len;         // length of the template sequence
@@ -80,8 +80,8 @@ typedef struct alignment {
 } align_t;
 
 typedef struct alignment_result {
-    align_t *alignments;
-    int n_alignments;
+    align_t alns[MAX_NUM_SEEDS + 1];
+    int n_alns;
 } alnres_t;
 
 typedef struct desc_loc_map {

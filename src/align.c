@@ -64,7 +64,9 @@ int _get_longest_exact_match(bp_t *bp, int max_len, gtree_t *node,
     res->n_matches = node->too_full ? 0    : node->n_matches;
     res->locs =      node->too_full ? NULL : node->locs;
 
-    while (pos < max_len && node->next[ bp[pos] ] != NULL) {
+    while (pos < max_len 
+            && bp[pos] != N 
+            && (node->next[ bp[pos] ] != NULL) )  {
         node = node->next[ bp[pos] ];
         pos++;
 
@@ -76,7 +78,7 @@ int _get_longest_exact_match(bp_t *bp, int max_len, gtree_t *node,
     return 0;
 }
 
-int gen_next_read(FILE *read_file, read_t *read) {
+int get_next_read(FILE *read_file, read_t *read) {
     char c;
     char fastq_line = 1;
     int cur_line_pos = 0;
@@ -104,15 +106,17 @@ int gen_next_read(FILE *read_file, read_t *read) {
             if (cur_line_pos == 0) {
                 // skip initial character
                 if (c != '@') DIE("Malformed FASTQ file");
+                cur_line_pos++;
+                continue;
             }
             read->template_id[cur_line_pos - 1] = c;
         } else if ( fastq_line == 2 ) {
             if (cur_line_pos >= read->malloc_len) {
                 read->malloc_len++;
                 // realloc key pointers
-                realloc(read->seq, sizeof(bp_t) * read->malloc_len++);
-                realloc(read->read_seq, sizeof(char) * read->malloc_len++);
-                realloc(read->phred, sizeof(char) * read->malloc_len++);
+                read->seq = realloc(read->seq, sizeof(bp_t) * read->malloc_len);
+                read->read_seq = realloc(read->read_seq, sizeof(char) * read->malloc_len);
+                read->phred = realloc(read->phred, sizeof(char) * read->malloc_len);
             }
 
             read->seq[cur_line_pos] = char_to_bp(c);
@@ -131,11 +135,10 @@ int gen_next_read(FILE *read_file, read_t *read) {
 int seed_matches(read_t *read, ix_t *ix, alnres_t *res) {
 
     // define a heap in an array.
-    align_t seeds[MAX_NUM_SEEDS + 1];
     align_t swp;        // for swap space;
 
     gtmatch_t cur_match;
-    int n_seeds = 0;
+    res->n_alns = 0;
 
     // want to use a heap here to maintain this.
     int pos, i;
@@ -147,25 +150,25 @@ int seed_matches(read_t *read, ix_t *ix, alnres_t *res) {
         }
         for (i = 0; i < cur_match.n_matches; i++) {
 
-            seeds[n_seeds].template_id = read->template_id;
-            seeds[n_seeds].ref = cur_match.locs[i].desc;
-            seeds[n_seeds].pos = cur_match.locs[i].pos;
-            seeds[n_seeds].seq = read->seq + pos;
-            seeds[n_seeds].seq_len = read->len;
-            seeds[n_seeds].align_len = cur_match.match_len;
-            sprintf(seeds[n_seeds].cigar, "%dM", cur_match.match_len);
+            res->alns[res->n_alns].template_id = read->template_id;
+            res->alns[res->n_alns].desc = cur_match.locs[i].desc;
+            res->alns[res->n_alns].pos = cur_match.locs[i].pos;
+            res->alns[res->n_alns].seq = read->seq + pos;
+            res->alns[res->n_alns].seq_len = read->len;
+            res->alns[res->n_alns].align_len = cur_match.match_len;
+            sprintf(res->alns[res->n_alns].cigar, "%dM", cur_match.match_len);
 
-            if (n_seeds < MAX_NUM_SEEDS) {
-                n_seeds++;
+            if (res->n_alns < MAX_NUM_SEEDS) {
+                res->n_alns++;
             }
             else {
                 // restrict heap
-                int heap_pos = n_seeds;
-                while (seeds[heap_pos].align_len 
-                            > seeds[heap_pos - 1].align_len) {
-                    swp = seeds[heap_pos - 1];
-                    seeds[heap_pos - 1] = seeds[heap_pos];
-                    seeds[heap_pos] = swp;
+                int heap_pos = res->n_alns;
+                while (res->alns[heap_pos].align_len 
+                            > res->alns[heap_pos - 1].align_len) {
+                    swp = res->alns[heap_pos - 1];
+                    res->alns[heap_pos - 1] = res->alns[heap_pos];
+                    res->alns[heap_pos] = swp;
                     heap_pos--;
                 }
             }
@@ -178,6 +181,7 @@ int seed_matches(read_t *read, ix_t *ix, alnres_t *res) {
 
 int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long pos) {
 
+    printf("starting to extend a single match\n");
     // read in bp_t* form
     // read->seq;
     int32_t l, m, k, i, 
@@ -191,14 +195,14 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
     bp_t ref_bp_string[ref_bp_len];
     refcpy(ref, desc, pos, ref_bp_len, ref_bp_string, &ref_bp_len);
 
-    int8_t ref_num[read->len + 2 * REF_PADDING_LEN];
-    char ref_seq[read->len + 2 * REF_PADDING_LEN + 1]; // +1 for '\0'
+    int8_t ref_num[ref_bp_len];
+    char ref_seq[ref_bp_len + 1]; // +1 for '\0'
 
-    for (i = 0; i < read->len + 2 * REF_PADDING_LEN; i++) {
+    for (i = 0; i < ref_bp_len; i++) {
         ref_num[i] = ref_bp_string[i];
         ref_seq[i] = bp_to_char(ref_bp_string[i]);
     }
-    ref_seq[read->len + 2 * REF_PADDING_LEN] = '\0';
+    ref_seq[ref_bp_len] = '\0';
 
     int8_t read_num[read->len];
     for (i = 0; i < read->len; i++) read_num[i] = read->seq[i];
@@ -225,4 +229,15 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
     free(mat);
     return 0;
     // reference seq
+}
+
+int align_single_read(read_t *read, ix_t *ix, ref_t *ref, alnres_t *res) {
+    seed_matches(read, ix, res);
+
+    int i;
+    for (i = 0; i < res->n_alns; i++) {
+        _extend_single_match(read, ix, ref, res->alns[i].desc, res->alns[i].pos);
+    }
+
+    return 0;
 }
