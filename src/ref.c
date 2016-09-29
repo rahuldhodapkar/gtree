@@ -98,6 +98,8 @@ desc_loc_map_t *_build_refix_from_ref(char *ref_filename) {
             }
         }
     }
+    // close the last contig len
+    cur->contig_len = ctglen;
 
     fclose(ref);
 
@@ -239,6 +241,10 @@ int refcpy( ref_t *ref,
         DIE("Invalid contig description passed");
     }
 
+    printf("DEBUG: match found, {contig_start: %lu, contig_len: %lu}\n",
+                                                match->contig_start, match->contig_len);
+    printf("DEBUG: seeking to pos [contig_start: %lu + pos: %lu]\n",
+                                                match->contig_start, pos );
     fseek(match->ref_file, match->contig_start + pos, SEEK_SET);
 
     int i;
@@ -246,8 +252,11 @@ int refcpy( ref_t *ref,
     for (i = 0; i < len; i++) {
         bp_t bp = NOBP;
 
-        if ( cur_pos < match->contig_len ) {
+        if ( cur_pos < match->contig_start + match->contig_len ) {
             char c = getc(match->ref_file);
+
+            printf("DEBUG: copying reference character [%c] @ %lu\n",
+                                                c, match->contig_start + cur_pos);
 
             switch (c) {
                 case 'a':

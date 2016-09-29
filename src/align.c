@@ -204,6 +204,9 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
     }
     ref_seq[ref_bp_len] = '\0';
 
+    printf("DEBUG: read sequence [%s]\n", read->read_seq);
+    printf("DEBUG: ref  sequence [%s]\n", ref_seq);
+
     int8_t read_num[read->len];
     for (i = 0; i < read->len; i++) read_num[i] = read->seq[i];
 
@@ -233,6 +236,9 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
 
 int align_single_read(read_t *read, ix_t *ix, ref_t *ref, alnres_t *res) {
     seed_matches(read, ix, res);
+
+    printf("DEBUG: align read [%s] : [%s]\n", read->read_seq, read->phred);
+    printf("DEBUG: found %d seed matches from index\n", res->n_alns);
 
     int i;
     for (i = 0; i < res->n_alns; i++) {

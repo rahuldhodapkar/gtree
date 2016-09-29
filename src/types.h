@@ -16,6 +16,7 @@ typedef struct args {
     char *ix_fn;
     char *out_fn;
     int out_format;
+    char *in_read_literal; // used if a literal read is passed as an argument
     char *in_fn;        // reads input file for first pair or unpaired
     char *in_fn2;       // reads input file for second pair
     char print_num;     // print num flag for `gtree ix stat`

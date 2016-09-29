@@ -28,11 +28,13 @@ cat <<HERE
 Your alignment setup is now complete, and all related files can be found
 under the "./tmp" directory
 
-./gtree aln -r lambda_virus_cleaned -ix lambda_virus_cleaned.gt 
+./gtree aln -r lambda_virus_cleaned -ix lambda_virus_cleaned.gt -i \\
+        data/longreads.fq
 
 or 
 
-./gtree aln -r lambda_virus_cleaned -ix lambda_virus_cleaned.msk.gt 
+./gtree aln -r lambda_virus_cleaned -ix lambda_virus_cleaned.msk.gt -i \\
+        data/longreads.fq
 
 HERE
 

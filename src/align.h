@@ -7,6 +7,12 @@
 
 
 /**
+ * standard helper conversion functions
+ */
+bp_t char_to_bp(char c);
+char bp_to_char (bp_t b);
+
+/**
  * load read from FASTQ to internal data structure
  *
  * @args:

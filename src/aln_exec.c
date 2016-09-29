@@ -25,6 +25,8 @@
 "                               ** feature not yet supported **\n"\
 "    -i [path]                  input FASTQ file, implies single reads\n"\
 "                               ** feature not yet supported **\n"\
+"    -rl [read_fasta]           literal FASTA single read to align\n"\
+"                               ** feature not yet supported **\n"\
 "    -pe [path1] [path2]        input FASTQ files for paired-end alignment\n"\
 "                               ** feature not yet supported **\n"\
 "    -h                         print this message and quit\n"\
@@ -142,6 +144,110 @@ int aln_simple(args_t *args) {
 }
 
 /**
+ * align only a single seed sequence against the reference.
+ */
+int aln_seed_seq(args_t *args) {
+    printf("Beginning single read literal alignment\n");
+
+    // use POSIX functions for timing harness
+    struct timeval tval_before, tval_after, tval_result;
+    ix_t *ix;
+    ref_t *ref;
+
+    /////////////////////////////////////////////////////////////////////////
+    //  LOAD INDEX
+    /////////////////////////////////////////////////////////////////////////
+    printf("Loading index...\n");
+    gettimeofday(&tval_before, NULL);
+    // call to time
+    ix = deserialize_ix(args->ix_fn);
+    print_ix_info(ix);
+    //
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+                                        (long int)tval_result.tv_usec);
+
+    /////////////////////////////////////////////////////////////////////////
+    //  LOAD REFERENCE
+    /////////////////////////////////////////////////////////////////////////
+    printf("Loading reference...\n");
+    gettimeofday(&tval_before, NULL);
+    // call to time
+    ref = load_ref(args->ref_fasta_fn);
+    print_ref_info(ref);
+    //
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+                                        (long int)tval_result.tv_usec);
+
+    /////////////////////////////////////////////////////////////////////////
+    //  ALIGN READS
+    /////////////////////////////////////////////////////////////////////////
+    printf("Aligning reads...\n");
+    gettimeofday(&tval_before, NULL);
+    // call to time
+    read_t *read = _init_read();
+    alnres_t aln;
+
+    size_t read_len = strlen(args->in_read_literal);
+
+    read->template_id[0] = '\0'; // empty string for anon template
+    read->read_seq = malloc(sizeof(char) * read_len + 1);
+    read->seq = malloc(sizeof(bp_t) * read_len);
+    read->phred = malloc(sizeof(char) * read_len + 1);
+    read->len = read_len;
+    read->malloc_len = read_len;
+
+    int i;
+    for (i = 0; i  < read_len; i++) {
+        read->read_seq[i] = args->in_read_literal[i];
+        read->seq[i] = char_to_bp(args->in_read_literal[i]);
+        read->phred[i] = '~';   // max quality
+    }
+    read->phred[read_len]    = '\0';   // NULL terminate strings
+    read->read_seq[read_len] = '\0';
+
+    align_single_read(read, ix, ref, &aln);
+    //
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+                                        (long int)tval_result.tv_usec);
+
+    _destroy_read(read);
+
+    /////////////////////////////////////////////////////////////////////////
+    //  DESTROY INDEX
+    /////////////////////////////////////////////////////////////////////////
+    printf("Destroying index...\n");
+    gettimeofday(&tval_before, NULL);
+    // call to time
+    destroy_ix(ix);
+    //
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+                                        (long int)tval_result.tv_usec);
+
+    /////////////////////////////////////////////////////////////////////////
+    //  DESTROY REFERENCE
+    /////////////////////////////////////////////////////////////////////////
+    printf("Destroying ref...\n");
+    gettimeofday(&tval_before, NULL);
+    // call to time
+    destroy_ref(ref);
+    //
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+                                        (long int)tval_result.tv_usec);
+
+    return 0;
+}
+
+/**
  * argument parsing function to call all other functions.
  *
  * @args:
@@ -161,7 +267,8 @@ int gtree_aln(int argc, char *argv[]) {
     args.ref_fasta_fn = 
         args.ix_fn = 
         args.out_fn = 
-        args.in_fn = 
+        args.in_read_literal =
+        args.in_fn =
         args.in_fn2 = NULL;
     args.out_format = OUTPUT_FORMAT_SAM;
 
@@ -200,6 +307,14 @@ int gtree_aln(int argc, char *argv[]) {
             }
 
             args.out_fn = argv[i+1]; 
+            i++;
+        } else if (strcmp("-rl", argv[i]) == 0) {
+            if ( i + 1 >= argc ) {
+                printf("ERROR: no read passed with '-rl'\n");
+                DIE("Invalid command line options");
+            }
+
+            args.in_read_literal = argv[i+1]; 
             i++;
         } else if (strcmp("-of", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
@@ -241,7 +356,12 @@ int gtree_aln(int argc, char *argv[]) {
 
     validate_aln_args(&args);
 
-    aln_simple(&args);
+    if (args.in_read_literal == NULL) {
+        aln_simple(&args);
+    }
+    else {
+        aln_seed_seq(&args);
+    }
 
     return 0;
 }
