@@ -33,8 +33,8 @@ under the "./tmp" directory
 
 or 
 
-./gtree aln -r lambda_virus_cleaned -ix lambda_virus_cleaned.msk.gt -i \\
-        data/longreads.fq
+./gtree aln -r lambda_virus_cleaned -ix lambda_virus_cleaned.msk.gt \\
+        -rl GGGCGGCGACCTCGCGGGTTTTCGCTATTTATGAAAATTTTCCGGTTTAAGGCGTTTCCGTTCTTCTTCGTCATAACTTAATGTTTTTATTTAAAATACCCTCTGAAAAGAAAGGAAACGACAGGTGCTGAAAGCGAGGCTTTTTGGCCTCT
 
 HERE
 

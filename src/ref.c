@@ -274,6 +274,7 @@ int refcpy( ref_t *ref,
                 case 't':
                 case 'T':
                     bp = T;
+                    break;
                 case 'n':
                 case 'N':
                     bp = N;
@@ -283,6 +284,7 @@ int refcpy( ref_t *ref,
                                                 c, c, desc, pos + match->contig_start);
                     DIE("Invalid character in reference");
             }
+
         } else {
             *refstrlen = cur_pos - pos;
             break;  // end copy

@@ -222,8 +222,8 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
     }
     for (m = 0; m < 5; ++m) mat[k++] = 0;
 
-    profile = ssw_init(read_num, 15, mat, 5, 2);
-    result = ssw_align (profile, ref_num, 39, gap_open, gap_extension, 1, 0, 0, 15);
+    profile = ssw_init(read_num, read->len, mat, 5, 2);
+    result = ssw_align (profile, ref_num, ref_bp_len, gap_open, gap_extension, 1, 0, 0, 15);
 
     ssw_write(result, ref_seq, read->read_seq, _NT_TABLE);
 

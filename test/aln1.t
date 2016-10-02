@@ -11,7 +11,7 @@
 use strict;
 use warnings;
 
-use Test::Simple tests => 5;
+use Test::Simple tests => 1;
 use POSIX qw(mkfifo);
 
 my @test_files = qw/.ti0.fa .ti0.refix \
@@ -41,14 +41,6 @@ close(FILE);
 ####################################################
 ## TEST REFERENCE SEEK
 ####################################################
-
-$out = `./gtree ix build -r .ti0.fa -o .to0.ix`;
-ok( $out !~ /ERROR/, 'error state detected' );
-
-$out = `./gtree aln -r .ti0 -ix .to0.ix`;
-ok( $out =~ /chr1\t6/, 'check "chr1" position' );
-ok( $out =~ /chr2\t42/, 'check "chr2" position' );
-ok( $out !~ /ERROR/, 'error state detected' );
 
 # clean up test files
 unlink( @test_files );
