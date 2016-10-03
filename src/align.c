@@ -91,6 +91,9 @@ int get_next_read(FILE *read_file, read_t *read) {
 
             if (fastq_line == 2) {
                 read->len = cur_line_pos;
+                read->read_seq[cur_line_pos] = '\0';
+                // phred should be same length as read_seq
+                read->phred[cur_line_pos] = '\0';
             }
 
             fastq_line++;
@@ -164,8 +167,9 @@ int seed_matches(read_t *read, ix_t *ix, alnres_t *res) {
             else {
                 // restrict heap
                 int heap_pos = res->n_alns;
-                while (res->alns[heap_pos].align_len 
-                            > res->alns[heap_pos - 1].align_len) {
+                while (heap_pos > 0 
+                       && res->alns[heap_pos].align_len 
+                          > res->alns[heap_pos - 1].align_len) {
                     swp = res->alns[heap_pos - 1];
                     res->alns[heap_pos - 1] = res->alns[heap_pos];
                     res->alns[heap_pos] = swp;
@@ -225,7 +229,11 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
     profile = ssw_init(read_num, read->len, mat, 5, 2);
     result = ssw_align (profile, ref_num, ref_bp_len, gap_open, gap_extension, 1, 0, 0, 15);
 
-    ssw_write(result, ref_seq, read->read_seq, _NT_TABLE);
+    if (result->ref_begin1 <= -1) {
+        DIE("alignment failed to produce reference sequence start position");
+    }
+
+    ssw_write(result, ref_seq, read->read_seq, _NT_TABLE, pos, desc);
 
     align_destroy(result);
     init_destroy(profile);
@@ -235,9 +243,10 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
 }
 
 int align_single_read(read_t *read, ix_t *ix, ref_t *ref, alnres_t *res) {
+    printf("DEBUG: align read [%s] : [%s]\n", read->read_seq, read->phred);
+
     seed_matches(read, ix, res);
 
-    printf("DEBUG: align read [%s] : [%s]\n", read->read_seq, read->phred);
     printf("DEBUG: found %d seed matches from index\n", res->n_alns);
 
     int i;

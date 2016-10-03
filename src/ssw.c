@@ -89,11 +89,14 @@ struct _profile{
 void ssw_write (const s_align* a,
             const char* ref_seq,
             const char* read_seq,
-            const int8_t* table) {
+            const int8_t* table,
+			const int32_t ref_offset,
+			const char* ref_seq_name) {
 
+	fprintf(stdout, ">%s\n\n", ref_seq_name);
     fprintf(stdout, "optimal_alignment_score: %d\tsub-optimal_alignment_score: %d\t", a->score1, a->score2);
-    if (a->ref_begin1 + 1) fprintf(stdout, "target_begin: %d\t", a->ref_begin1 + 1);
-    fprintf(stdout, "target_end: %d\t", a->ref_end1 + 1);
+    if (a->ref_begin1 + 1) fprintf(stdout, "target_begin: %d\t", ref_offset + a->ref_begin1 + 1);
+    fprintf(stdout, "target_end: %d\t", ref_offset + a->ref_end1 + 1);
     if (a->read_begin1 + 1) fprintf(stdout, "query_begin: %d\t", a->read_begin1 + 1);
     fprintf(stdout, "query_end: %d\n\n", a->read_end1 + 1);
     if (a->cigar) {
@@ -103,7 +106,7 @@ void ssw_write (const s_align* a,
             int32_t count = 0;
             int32_t q = qb;
             int32_t p = pb;
-            fprintf(stdout, "Target: %8d    ", q + 1);
+            fprintf(stdout, "Target: %8d    ", ref_offset + q + 1);
             for (c = e; c < a->cigarLen; ++c) {
                 char letter = cigar_int_to_op(a->cigar[c]);
                 uint32_t length = cigar_int_to_len(a->cigar[c]);
@@ -119,7 +122,7 @@ void ssw_write (const s_align* a,
                 }
             }
 step2:
-            fprintf(stdout, "    %d\n                    ", q);
+            fprintf(stdout, "    %d\n                    ", ref_offset + q);
             q = qb;
             count = 0;
             for (c = e; c < a->cigarLen; ++c) {

@@ -251,10 +251,10 @@ int refcpy( ref_t *ref,
     unsigned int cur_pos = pos;
     for (i = 0; i < len; i++) {
         bp_t bp = NOBP;
+        char c;
 
-        if ( cur_pos < match->contig_start + match->contig_len ) {
-            char c = getc(match->ref_file);
-
+        if ( cur_pos < match->contig_start + match->contig_len 
+                && ( (c = getc(match->ref_file)) != EOF) ) {
             printf("DEBUG: copying reference character [%c] @ %lu\n",
                                                 c, match->contig_start + cur_pos);
 

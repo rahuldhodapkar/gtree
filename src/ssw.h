@@ -169,7 +169,9 @@ uint32_t to_cigar_int (uint32_t length, char op_letter);
 void ssw_write (const s_align* a,
             const char* ref_seq,
             const char* read_seq,
-            const int8_t* table);
+            const int8_t* table,
+			const int32_t ref_offset,
+			const char* ref_seq_name);
 
 /*!	@function		Extract CIGAR operation character from CIGAR 32-bit unsigned integer
 	@param	cigar_int	32-bit unsigned integer, representing encoded CIGAR operation and length
