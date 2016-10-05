@@ -202,7 +202,7 @@ ref_t *load_ref(char *ref_file_base) {
 
     if ( access(ref_filename, F_OK) == -1 ) {
         printf("ERROR: unable to access reference file %s\n", ref_filename);
-        DIE("Unable to access file");
+        DIE("Unable to access file %s", ref_filename);
     }
 
     desc_loc_map_t *refix;
@@ -238,7 +238,7 @@ int refcpy( ref_t *ref,
 
     if (match == NULL) {
         fprintf(stderr, "ERROR: desc '%s' not found in reference\n", desc);
-        DIE("Invalid contig description passed");
+        DIE("Invalid contig description '%s' passed", desc);
     }
 
     printf("DEBUG: match found, {contig_start: %lu, contig_len: %lu}\n",
@@ -282,7 +282,8 @@ int refcpy( ref_t *ref,
                 default:
                     fprintf(stderr, "ERROR: Invalid character %c (%d) found at %s:%lu\n",
                                                 c, c, desc, pos + match->contig_start);
-                    DIE("Invalid character in reference");
+                    DIE("Invalid character %c (%d) found at %s:%lu",
+                                                c, c, desc, pos + match->contig_start);
             }
 
         } else {

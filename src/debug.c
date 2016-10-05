@@ -8,8 +8,10 @@
 #include <stdlib.h>
 #include <execinfo.h>
 #include <stdio.h>
+#include <stdarg.h>
 
-void die(char *errmsg, int errcode) {
+void die(int errcode, char *msg, ...) {
+
     void *bt_array[DEBUG_BT_BUFFER_SIZE];
     size_t n_frames;
     char **frames;
@@ -17,7 +19,11 @@ void die(char *errmsg, int errcode) {
     n_frames = backtrace(bt_array, DEBUG_BT_BUFFER_SIZE);
     frames = backtrace_symbols(bt_array, n_frames);
 
-    fprintf(stderr, "%s\n", errmsg);
+    va_list argptr;
+    va_start(argptr, msg);
+    vfprintf(stderr, msg, argptr);
+    va_end(argptr);
+
     int i;
     for (i = 0; i < n_frames; i++) {
         fprintf(stderr, "%s\n", frames[i]);

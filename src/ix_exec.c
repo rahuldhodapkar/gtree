@@ -49,7 +49,7 @@
 int validate_ix_args(args_t *args) {
     if (args->exec_mode < 0) {
         printf("ERROR: no execution mode chosen, use build or align\n");
-        DIE("Invalid command line options");
+        DIE("Invalid command line options, no exec mode chosen", 0);
     }
     return 0;
 }
@@ -288,7 +288,7 @@ int gtree_ix(int argc, char *argv[]) {
     args.out_format = OUTPUT_FORMAT_SAM;
     if (argc <= 2) {
         printf(GTREE_IX_HELP_MESSAGE);
-        DIE("Invalid command line options");
+        DIE("Invalid command line options", 0);
     }
 
     if (strcmp(argv[2], "build") == 0) {
@@ -311,7 +311,7 @@ int gtree_ix(int argc, char *argv[]) {
         } else if (strcmp("-r", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
                 printf("ERROR: no ref sequence passed with '-r'\n");
-                DIE("Invalid command line options");
+                DIE("Invalid command line option usage - %s", "'-r'");
             }
 
             args.ref_fasta_fn = argv[i+1]; 
@@ -319,7 +319,7 @@ int gtree_ix(int argc, char *argv[]) {
         } else if (strcmp("-ix", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
                 printf("ERROR: no index filename passed with '-ix'\n");
-                DIE("Invalid command line options");
+                DIE("Invalid command line option usage - %s", "'-ix'");
             }
 
             args.ix_fn = argv[i+1]; 
@@ -327,7 +327,7 @@ int gtree_ix(int argc, char *argv[]) {
         } else if (strcmp("-o", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
                 printf("ERROR: no output file passed with '-o'\n");
-                DIE("Invalid command line options");
+                DIE("Invalid command line option usage - %s", "'-o'");
             }
 
             args.out_fn = argv[i+1]; 
@@ -335,7 +335,7 @@ int gtree_ix(int argc, char *argv[]) {
         } else if (strcmp("-of", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
                 printf("ERROR: no output format passed with '-of'\n");
-                DIE("Invalid command line options");
+                DIE("Invalid command line option usage - %s", "'-of'");
             }
 
             if (strcmp(argv[i+1], "SAM") == 0) {
@@ -345,7 +345,7 @@ int gtree_ix(int argc, char *argv[]) {
             } else {
                 printf("ERROR: invalid output format %s passed, " 
                        "choose 'SAM' or 'BAM'\n", argv[i+1]);
-                DIE("Invalid command line options");
+                DIE("Invalid output format %s passed", argv[i+1]);
             }
 
             i++;
@@ -365,7 +365,7 @@ int gtree_ix(int argc, char *argv[]) {
         ix_stat(&args);
     } else {
         printf("ERROR: unknown exec_mode option '%d', passed\n", args.exec_mode);
-        DIE("Invalid command line options");
+        DIE("Invalid exec_mode option '%d' passed", args.exec_mode);
     }
 
     printf("finished running!\n");

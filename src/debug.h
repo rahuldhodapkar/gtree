@@ -10,15 +10,17 @@
  *      errmsg - message to print to STDERR
  *
  */
-#define DIE(errmsg) die(errmsg, ERRCODE_GENERAL_ERROR)
+#define DIE(msg, ...) die(ERRCODE_GENERAL_ERROR, msg, __VA_ARGS__)
 
 /**
  * print error message to standard error and terminate process with errcode
  * 
  * @args:
- *      errmsg - message to print to STDERR
  *      errcode - code to exit with
+ *      msg - the message to exit with as a template string
+ *      ... - must be at least of length 1, first argument passed as template 
+ *            string to printf, remaining arguments passed as templating args
  */
-void die(char *errmsg, int errcode);
+void die(int errcode, char *msg, ...);
 
 #endif

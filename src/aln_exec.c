@@ -287,7 +287,7 @@ int gtree_aln(int argc, char *argv[]) {
         } else if (strcmp("-r", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
                 printf("ERROR: no ref sequence passed with '-r'\n");
-                DIE("Invalid command line options");
+                DIE("Invalid command line option usage - %s", "'-r'");
             }
 
             args.ref_fasta_fn = argv[i+1]; 
@@ -295,7 +295,7 @@ int gtree_aln(int argc, char *argv[]) {
         } else if (strcmp("-ix", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
                 printf("ERROR: no index filename passed with '-ix'\n");
-                DIE("Invalid command line options");
+                DIE("Invalid command line option usage - %s", "'-ix'");
             }
 
             args.ix_fn = argv[i+1]; 
@@ -303,7 +303,7 @@ int gtree_aln(int argc, char *argv[]) {
         } else if (strcmp("-o", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
                 printf("ERROR: no output file passed with '-o'\n");
-                DIE("Invalid command line options");
+                DIE("Invalid command line option usage - %s", "'-o'");
             }
 
             args.out_fn = argv[i+1]; 
@@ -311,7 +311,7 @@ int gtree_aln(int argc, char *argv[]) {
         } else if (strcmp("-rl", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
                 printf("ERROR: no read passed with '-rl'\n");
-                DIE("Invalid command line options");
+                DIE("Invalid command line option usage - %s", "'-rl'");
             }
 
             args.in_read_literal = argv[i+1]; 
@@ -319,7 +319,7 @@ int gtree_aln(int argc, char *argv[]) {
         } else if (strcmp("-of", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
                 printf("ERROR: no output format passed with '-of'\n");
-                DIE("Invalid command line options");
+                DIE("Invalid command line option usage - %s", "'-of'");
             }
 
             if (strcmp(argv[i+1], "SAM") == 0) {
@@ -329,14 +329,14 @@ int gtree_aln(int argc, char *argv[]) {
             } else {
                 printf("ERROR: invalid output format %s passed, " 
                        "choose 'SAM' or 'BAM'\n", argv[i+1]);
-                DIE("Invalid command line options");
+                DIE("Invalid output format %s passed", argv[i+1]);
             }
 
             i++;
         } else if (strcmp("-i", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
                 printf("ERROR: no input file passed with '-i'\n");
-                DIE("Invalid command line options");
+                DIE("Invalid command line option usage - %s", "'-i'");
             }
 
             args.in_fn = argv[i+1]; 
@@ -344,7 +344,7 @@ int gtree_aln(int argc, char *argv[]) {
         } else if (strcmp("-pe", argv[i]) == 0) {
             if ( i + 2 >= argc ) {
                 printf("ERROR: not enough inputs with '-pe'; 2 required\n");
-                DIE("Invalid command line options");
+                DIE("Invalid command line option usage - %s", "'-pe'");
             }
 
             args.in_fn = argv[i+1]; 

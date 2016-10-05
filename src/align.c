@@ -51,7 +51,7 @@ char bp_to_char (bp_t b) {
         case N:
             return 'N';
         default:
-            DIE("Unable to marshall bp_t -> char");
+            DIE("Unable to marshall bp_t [%d] -> char", b);
             return '\0';
     }
 }
@@ -108,7 +108,7 @@ int get_next_read(FILE *read_file, read_t *read) {
             // header line
             if (cur_line_pos == 0) {
                 // skip initial character
-                if (c != '@') DIE("Malformed FASTQ file");
+                if (c != '@') DIE("Malformed FASTQ file", 0);
                 cur_line_pos++;
                 continue;
             }
@@ -230,7 +230,8 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
     result = ssw_align (profile, ref_num, ref_bp_len, gap_open, gap_extension, 1, 0, 0, 15);
 
     if (result->ref_begin1 <= -1) {
-        DIE("alignment failed to produce reference sequence start position");
+        DIE("alignment failed to produce reference sequence start position [%d]",
+                                                               result->ref_begin1);
     }
 
     ssw_write(result, ref_seq, read->read_seq, _NT_TABLE, pos, desc);

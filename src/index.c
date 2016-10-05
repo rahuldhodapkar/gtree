@@ -72,7 +72,7 @@ int _serialize_gtree( gtree_t *node, FILE *out, ix_t *ix ) {
 
         if (matchpos == -1 && node->locs[i].desc != NULL) {
             //assert() somehow
-            DIE("attempting to serialize corrupted gtree");
+            DIE("attempting to serialize corrupted gtree", 0);
         }
 
         // write loc structure
