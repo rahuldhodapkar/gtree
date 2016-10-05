@@ -68,7 +68,7 @@ int aln_simple(args_t *args) {
     /////////////////////////////////////////////////////////////////////////
     //  LOAD INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Loading index...\n");
+    INFO("Loading index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     ix = deserialize_ix(args->ix_fn);
@@ -76,13 +76,13 @@ int aln_simple(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  LOAD REFERENCE
     /////////////////////////////////////////////////////////////////////////
-    printf("Loading reference...\n");
+    INFO("Loading reference...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     ref = load_ref(args->ref_fasta_fn);
@@ -90,13 +90,13 @@ int aln_simple(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  ALIGN READS
     /////////////////////////////////////////////////////////////////////////
-    printf("Aligning reads...\n");
+    INFO("Aligning reads...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     FILE *reads_file = fopen(args->in_fn, "r");
@@ -109,7 +109,7 @@ int aln_simple(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     _destroy_read(read);
@@ -117,27 +117,27 @@ int aln_simple(args_t *args) {
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Destroying index...\n");
+    INFO("Destroying index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     destroy_ix(ix);
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY REFERENCE
     /////////////////////////////////////////////////////////////////////////
-    printf("Destroying ref...\n");
+    INFO("Destroying ref...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     destroy_ref(ref);
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     return 0;
@@ -147,7 +147,7 @@ int aln_simple(args_t *args) {
  * align only a single seed sequence against the reference.
  */
 int aln_seed_seq(args_t *args) {
-    printf("Beginning single read literal alignment\n");
+    INFO("Beginning single read literal alignment\n");
 
     // use POSIX functions for timing harness
     struct timeval tval_before, tval_after, tval_result;
@@ -157,7 +157,7 @@ int aln_seed_seq(args_t *args) {
     /////////////////////////////////////////////////////////////////////////
     //  LOAD INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Loading index...\n");
+    INFO("Loading index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     ix = deserialize_ix(args->ix_fn);
@@ -165,13 +165,13 @@ int aln_seed_seq(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  LOAD REFERENCE
     /////////////////////////////////////////////////////////////////////////
-    printf("Loading reference...\n");
+    INFO("Loading reference...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     ref = load_ref(args->ref_fasta_fn);
@@ -179,13 +179,13 @@ int aln_seed_seq(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  ALIGN READS
     /////////////////////////////////////////////////////////////////////////
-    printf("Aligning reads...\n");
+    INFO("Aligning reads...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     read_t *read = _init_read();
@@ -213,7 +213,7 @@ int aln_seed_seq(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     _destroy_read(read);
@@ -221,27 +221,27 @@ int aln_seed_seq(args_t *args) {
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Destroying index...\n");
+    INFO("Destroying index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     destroy_ix(ix);
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY REFERENCE
     /////////////////////////////////////////////////////////////////////////
-    printf("Destroying ref...\n");
+    INFO("Destroying ref...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     destroy_ref(ref);
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     return 0;
@@ -286,40 +286,35 @@ int gtree_aln(int argc, char *argv[]) {
             args.verbosity = VERBOSITY_LEVEL_DEBUG;
         } else if (strcmp("-r", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
-                printf("ERROR: no ref sequence passed with '-r'\n");
-                DIE("Invalid command line option usage - %s", "'-r'");
+                DIE("Invalid command line option usage - %s\n", "'-r'");
             }
 
             args.ref_fasta_fn = argv[i+1]; 
             i++;
         } else if (strcmp("-ix", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
-                printf("ERROR: no index filename passed with '-ix'\n");
-                DIE("Invalid command line option usage - %s", "'-ix'");
+                DIE("Invalid command line option usage - %s\n", "'-ix'");
             }
 
             args.ix_fn = argv[i+1]; 
             i++;
         } else if (strcmp("-o", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
-                printf("ERROR: no output file passed with '-o'\n");
-                DIE("Invalid command line option usage - %s", "'-o'");
+                DIE("Invalid command line option usage - %s\n", "'-o'");
             }
 
             args.out_fn = argv[i+1]; 
             i++;
         } else if (strcmp("-rl", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
-                printf("ERROR: no read passed with '-rl'\n");
-                DIE("Invalid command line option usage - %s", "'-rl'");
+                DIE("Invalid command line option usage - %s\n", "'-rl'");
             }
 
             args.in_read_literal = argv[i+1]; 
             i++;
         } else if (strcmp("-of", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
-                printf("ERROR: no output format passed with '-of'\n");
-                DIE("Invalid command line option usage - %s", "'-of'");
+                DIE("Invalid command line option usage - %s\n", "'-of'");
             }
 
             if (strcmp(argv[i+1], "SAM") == 0) {
@@ -327,24 +322,21 @@ int gtree_aln(int argc, char *argv[]) {
             } else if (strcmp(argv[i+1], "BAM") == 0) {
                 args.out_format = OUTPUT_FORMAT_BAM;
             } else {
-                printf("ERROR: invalid output format %s passed, " 
+                DIE("Invalid output format %s passed, "
                        "choose 'SAM' or 'BAM'\n", argv[i+1]);
-                DIE("Invalid output format %s passed", argv[i+1]);
             }
 
             i++;
         } else if (strcmp("-i", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
-                printf("ERROR: no input file passed with '-i'\n");
-                DIE("Invalid command line option usage - %s", "'-i'");
+                DIE("Invalid command line option usage - %s\n", "'-i'");
             }
 
             args.in_fn = argv[i+1]; 
             i++;
         } else if (strcmp("-pe", argv[i]) == 0) {
             if ( i + 2 >= argc ) {
-                printf("ERROR: not enough inputs with '-pe'; 2 required\n");
-                DIE("Invalid command line option usage - %s", "'-pe'");
+                DIE("Invalid command line option usage - %s\n", "'-pe'");
             }
 
             args.in_fn = argv[i+1]; 

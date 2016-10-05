@@ -48,8 +48,8 @@
 
 int validate_ix_args(args_t *args) {
     if (args->exec_mode < 0) {
-        printf("ERROR: no execution mode chosen, use build or align\n");
-        DIE("Invalid command line options, no exec mode chosen", 0);
+        DIE("Invalid command line options, no exec mode chosen;"
+                                          " use build or align\n", 0);
     }
     return 0;
 }
@@ -62,7 +62,7 @@ int ix_prune(args_t *args) {
     /////////////////////////////////////////////////////////////////////////
     //  LOAD INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Loading index...\n");
+    INFO("Loading index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     ix = deserialize_ix(args->ix_fn);
@@ -70,13 +70,13 @@ int ix_prune(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  PRUNE INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Pruning index...\n");
+    INFO("Pruning index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     prune_gtree(ix->root);
@@ -84,13 +84,13 @@ int ix_prune(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
     
     /////////////////////////////////////////////////////////////////////////
     //  SERIALIZE INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Serializing...\n");
+    INFO("Serializing...\n");
     gettimeofday(&tval_before, NULL);
 
     // call to time
@@ -98,21 +98,21 @@ int ix_prune(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Serializing done in %ld.%06ld secs\n\n", 
+    INFO("Serializing done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Destroying built index...\n");
+    INFO("Destroying built index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     destroy_ix(ix);
     // 
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Destroying done in %ld.%06ld secs\n\n", 
+    INFO("Destroying done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
@@ -128,7 +128,7 @@ int ix_build(args_t *args) {
     /////////////////////////////////////////////////////////////////////////
     //  BUILD INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Building...\n");
+    INFO("Building...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     ix = build_ix_from_ref_seq(args->ref_fasta_fn);
@@ -136,13 +136,13 @@ int ix_build(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Building done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Building done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  SERIALIZE INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Serializing...\n");
+    INFO("Serializing...\n");
     gettimeofday(&tval_before, NULL);
 
     // call to time
@@ -150,21 +150,21 @@ int ix_build(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Serializing done in %ld.%06ld secs\n\n", 
+    INFO("Serializing done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Destroying built index...\n");
+    INFO("Destroying built index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     destroy_ix(ix);
     // 
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Destroying done in %ld.%06ld secs\n\n", 
+    INFO("Destroying done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
@@ -180,7 +180,7 @@ int ix_mask(args_t *args) {
     /////////////////////////////////////////////////////////////////////////
     //  LOAD INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Loading index...\n");
+    INFO("Loading index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     ix = deserialize_ix(args->ix_fn);
@@ -188,13 +188,13 @@ int ix_mask(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  MASK INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Pruning index...\n");
+    INFO("Pruning index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     mask_gtree(args->ref_fasta_fn, ix);
@@ -202,13 +202,13 @@ int ix_mask(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  SERIALIZE INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Serializing...\n");
+    INFO("Serializing...\n");
     gettimeofday(&tval_before, NULL);
 
     // call to time
@@ -216,21 +216,21 @@ int ix_mask(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Serializing done in %ld.%06ld secs\n\n", 
+    INFO("Serializing done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Destroying built index...\n");
+    INFO("Destroying built index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     destroy_ix(ix);
     // 
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Destroying done in %ld.%06ld secs\n\n", 
+    INFO("Destroying done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
@@ -246,7 +246,7 @@ int ix_stat(args_t *args) {
     /////////////////////////////////////////////////////////////////////////
     //  LOAD INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Loading index...\n");
+    INFO("Loading index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     ix = deserialize_ix(args->ix_fn);
@@ -254,20 +254,20 @@ int ix_stat(args_t *args) {
     //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
+    INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY INDEX
     /////////////////////////////////////////////////////////////////////////
-    printf("Destroying loaded index...\n");
+    INFO("Destroying loaded index...\n");
     gettimeofday(&tval_before, NULL);
     // call to time
     destroy_ix(ix);
     // 
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
-    printf("INFO: Destroying done in %ld.%06ld secs\n\n", 
+    INFO("Destroying done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 
@@ -288,7 +288,7 @@ int gtree_ix(int argc, char *argv[]) {
     args.out_format = OUTPUT_FORMAT_SAM;
     if (argc <= 2) {
         printf(GTREE_IX_HELP_MESSAGE);
-        DIE("Invalid command line options", 0);
+        DIE("Invalid command line options\n", 0);
     }
 
     if (strcmp(argv[2], "build") == 0) {
@@ -310,32 +310,28 @@ int gtree_ix(int argc, char *argv[]) {
             args.verbosity = VERBOSITY_LEVEL_DEBUG;
         } else if (strcmp("-r", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
-                printf("ERROR: no ref sequence passed with '-r'\n");
-                DIE("Invalid command line option usage - %s", "'-r'");
+                DIE("Invalid command line option usage - %s\n", "'-r'");
             }
 
             args.ref_fasta_fn = argv[i+1]; 
             i++;
         } else if (strcmp("-ix", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
-                printf("ERROR: no index filename passed with '-ix'\n");
-                DIE("Invalid command line option usage - %s", "'-ix'");
+                DIE("Invalid command line option usage - %s\n", "'-ix'");
             }
 
             args.ix_fn = argv[i+1]; 
             i++;
         } else if (strcmp("-o", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
-                printf("ERROR: no output file passed with '-o'\n");
-                DIE("Invalid command line option usage - %s", "'-o'");
+                DIE("Invalid command line option usage - %s\n", "'-o'");
             }
 
             args.out_fn = argv[i+1]; 
             i++;
         } else if (strcmp("-of", argv[i]) == 0) {
             if ( i + 1 >= argc ) {
-                printf("ERROR: no output format passed with '-of'\n");
-                DIE("Invalid command line option usage - %s", "'-of'");
+                DIE("Invalid command line option usage - %s\n", "'-of'");
             }
 
             if (strcmp(argv[i+1], "SAM") == 0) {
@@ -343,9 +339,8 @@ int gtree_ix(int argc, char *argv[]) {
             } else if (strcmp(argv[i+1], "BAM") == 0) {
                 args.out_format = OUTPUT_FORMAT_BAM;
             } else {
-                printf("ERROR: invalid output format %s passed, " 
+                DIE("Invalid output format %s passed, "
                        "choose 'SAM' or 'BAM'\n", argv[i+1]);
-                DIE("Invalid output format %s passed", argv[i+1]);
             }
 
             i++;
@@ -364,11 +359,10 @@ int gtree_ix(int argc, char *argv[]) {
     } else if (args.exec_mode == EXEC_MODE_IX_STAT) {
         ix_stat(&args);
     } else {
-        printf("ERROR: unknown exec_mode option '%d', passed\n", args.exec_mode);
-        DIE("Invalid exec_mode option '%d' passed", args.exec_mode);
+        DIE("Invalid exec_mode option '%d' passed\n", args.exec_mode);
     }
 
-    printf("finished running!\n");
+    INFO("finished running!\n");
     return 0;
 }
 

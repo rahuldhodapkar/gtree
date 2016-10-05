@@ -86,7 +86,7 @@ int build_gtree( char *ix_file,
                  gtree_t **gtree_root, 
                  char ***desc_strings,
                  unsigned int *n_descs ) { 
-    printf("Building gtree on FASTA input %s.\n", ix_file);
+    INFO("Building gtree on FASTA input %s.\n", ix_file);
 
     // declare local copies for readability
     char **descs = *desc_strings;
@@ -179,14 +179,14 @@ int build_gtree( char *ix_file,
                              cur_pos - cur_window_size, descs[*n_descs - 1]);
                 break; 
             default:
-                printf("ERROR - encountered illegal character [%c|%d] in %s:%ld",
+                DIE("Encountered illegal character [%c|%d] in %s:%ld\n",
                             c, c, descs[*n_descs - 1], cur_pos - cur_window_size); 
                 break;
         }
 
         if (iter % 1000000 == 0) {
             iter = 0;
-            printf("Working at desc:%s, pos:%ld, window:%ld\n",
+            INFO("Working at desc:%s, pos:%ld, window:%ld\n",
                     descs[*n_descs - 1], cur_pos, cur_window_size);
         }
         iter++; 
@@ -201,7 +201,7 @@ int build_gtree( char *ix_file,
 }
 
 int mask_gtree( char *ix_file, ix_t *ix ) {
-    printf("Masking gtree on FASTA input %s.\n", ix_file);
+    INFO("Masking gtree on FASTA input %s.\n", ix_file);
 
     FILE *in = fopen(ix_file, "r");
 
@@ -296,9 +296,9 @@ int mask_gtree( char *ix_file, ix_t *ix ) {
                              ix->descs[ix->n_descs - 1]);
                 break; 
             default:
-                printf("WARN: encountered illegal character [%c|%d] in %s:%ld",
+                WARN("encountered illegal character [%c|%d] in %s:%ld",
                             c, c, ix->descs[ix->n_descs - 1],
-                            cur_pos - cur_window_size); 
+                            cur_pos - cur_window_size);
                 break;
         }
 
@@ -321,7 +321,7 @@ int mask_gtree( char *ix_file, ix_t *ix ) {
             iter = 0;
             long int in_pos = ftell(in);
 
-            printf("INFO: %02ld%% of file processed;"
+            INFO("%02ld%% of file processed;"
                    " working at desc:%s, pos:%ld, window:%ld\n",
                    100 * in_pos / in_size,
                    ix->descs[ix->n_descs - 1], cur_pos, cur_window_size);

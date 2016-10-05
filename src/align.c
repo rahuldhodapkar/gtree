@@ -51,7 +51,7 @@ char bp_to_char (bp_t b) {
         case N:
             return 'N';
         default:
-            DIE("Unable to marshall bp_t [%d] -> char", b);
+            DIE("Unable to marshall bp_t [%d] -> char\n", b);
             return '\0';
     }
 }
@@ -108,7 +108,7 @@ int get_next_read(FILE *read_file, read_t *read) {
             // header line
             if (cur_line_pos == 0) {
                 // skip initial character
-                if (c != '@') DIE("Malformed FASTQ file", 0);
+                if (c != '@') DIE("Malformed FASTQ file\n", 0);
                 cur_line_pos++;
                 continue;
             }
@@ -185,7 +185,7 @@ int seed_matches(read_t *read, ix_t *ix, alnres_t *res) {
 
 int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long pos) {
 
-    printf("starting to extend a single match\n");
+    DEBUG("starting to extend a single match\n");
     // read in bp_t* form
     // read->seq;
     int32_t l, m, k, i, 
@@ -208,8 +208,8 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
     }
     ref_seq[ref_bp_len] = '\0';
 
-    printf("DEBUG: read sequence [%s]\n", read->read_seq);
-    printf("DEBUG: ref  sequence [%s]\n", ref_seq);
+    DEBUG("read sequence [%s]\n", read->read_seq);
+    DEBUG("ref  sequence [%s]\n", ref_seq);
 
     int8_t read_num[read->len];
     for (i = 0; i < read->len; i++) read_num[i] = read->seq[i];
@@ -230,7 +230,7 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
     result = ssw_align (profile, ref_num, ref_bp_len, gap_open, gap_extension, 1, 0, 0, 15);
 
     if (result->ref_begin1 <= -1) {
-        DIE("alignment failed to produce reference sequence start position [%d]",
+        DIE("alignment failed to produce reference sequence start position [%d]\n",
                                                                result->ref_begin1);
     }
 
@@ -244,11 +244,11 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
 }
 
 int align_single_read(read_t *read, ix_t *ix, ref_t *ref, alnres_t *res) {
-    printf("DEBUG: align read [%s] : [%s]\n", read->read_seq, read->phred);
+    DEBUG("align read [%s] : [%s]\n", read->read_seq, read->phred);
 
     seed_matches(read, ix, res);
 
-    printf("DEBUG: found %d seed matches from index\n", res->n_alns);
+    DEBUG("found %d seed matches from index\n", res->n_alns);
 
     int i;
     for (i = 0; i < res->n_alns; i++) {

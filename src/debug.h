@@ -12,6 +12,24 @@
  */
 #define DIE(msg, ...) die(ERRCODE_GENERAL_ERROR, msg, __VA_ARGS__)
 
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_INFO
+#define INFO(...) printf("INFO: "); printf(__VA_ARGS__)
+#else
+#define INFO(...) do {} while (0)
+#endif
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_WARN
+#define WARN(...) printf("WARN: "); printf(__VA_ARGS__)
+#else
+#define WARN(...) do {} while (0)
+#endif
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
+#define DEBUG(...) printf("DEBUG: "); printf(__VA_ARGS__)
+#else
+#define DEBUG(...) do {} while (0)
+#endif
+
 /**
  * print error message to standard error and terminate process with errcode
  * 

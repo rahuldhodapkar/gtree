@@ -201,8 +201,7 @@ ref_t *load_ref(char *ref_file_base) {
     strcat(ref_filename, ".fa");
 
     if ( access(ref_filename, F_OK) == -1 ) {
-        printf("ERROR: unable to access reference file %s\n", ref_filename);
-        DIE("Unable to access file %s", ref_filename);
+        DIE("Unable to access file %s\n", ref_filename);
     }
 
     desc_loc_map_t *refix;
@@ -237,13 +236,12 @@ int refcpy( ref_t *ref,
     }
 
     if (match == NULL) {
-        fprintf(stderr, "ERROR: desc '%s' not found in reference\n", desc);
-        DIE("Invalid contig description '%s' passed", desc);
+        DIE("Invalid contig description '%s' passed\n", desc);
     }
 
-    printf("DEBUG: match found, {contig_start: %lu, contig_len: %lu}\n",
+    DEBUG("match found, {contig_start: %lu, contig_len: %lu}\n",
                                                 match->contig_start, match->contig_len);
-    printf("DEBUG: seeking to pos [contig_start: %lu + pos: %lu]\n",
+    DEBUG("seeking to pos [contig_start: %lu + pos: %lu]\n",
                                                 match->contig_start, pos );
     fseek(match->ref_file, match->contig_start + pos, SEEK_SET);
 
@@ -255,7 +253,7 @@ int refcpy( ref_t *ref,
 
         if ( cur_pos < match->contig_start + match->contig_len 
                 && ( (c = getc(match->ref_file)) != EOF) ) {
-            printf("DEBUG: copying reference character [%c] @ %lu\n",
+            DEBUG("copying reference character [%c] @ %lu\n",
                                                 c, match->contig_start + cur_pos);
 
             switch (c) {
@@ -280,9 +278,7 @@ int refcpy( ref_t *ref,
                     bp = N;
                     break;
                 default:
-                    fprintf(stderr, "ERROR: Invalid character %c (%d) found at %s:%lu\n",
-                                                c, c, desc, pos + match->contig_start);
-                    DIE("Invalid character %c (%d) found at %s:%lu",
+                    DIE("Invalid character %c (%d) found at %s:%lu\n",
                                                 c, c, desc, pos + match->contig_start);
             }
 
