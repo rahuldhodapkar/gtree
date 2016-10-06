@@ -19,7 +19,7 @@
 
 #define DEBUG_BT_BUFFER_SIZE 100
 
-#define VERBOSITY_LEVEL 5
+#define VERBOSITY_LEVEL 0
 
 // verbosity of execution for debug logging / profiling
 #define VERBOSITY_LEVEL_QUIET 0

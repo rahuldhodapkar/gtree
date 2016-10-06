@@ -205,10 +205,12 @@ int mask_gtree( char *ix_file, ix_t *ix ) {
 
     FILE *in = fopen(ix_file, "r");
 
-    // get file size
-    fseek(in, 0L, SEEK_END);
+#if VERBOSITY_LEVEL > VERBOSITY_LEVEL_INFO
+    // get file size    
+    fseek(in, 0L, SEEK_END);    
     long int in_size = ftell(in);
     rewind(in);
+#endif
 
     // define current position values
     char *cur_desc = malloc(MAX_DESC_LEN); 
@@ -319,11 +321,10 @@ int mask_gtree( char *ix_file, ix_t *ix ) {
 
         if (iter % 1000000 == 0) {
             iter = 0;
-            long int in_pos = ftell(in);
 
             INFO("%02ld%% of file processed;"
                    " working at desc:%s, pos:%ld, window:%ld\n",
-                   100 * in_pos / in_size,
+                   100 * ftell(in) / in_size,
                    ix->descs[ix->n_descs - 1], cur_pos, cur_window_size);
         }
         iter++; 
