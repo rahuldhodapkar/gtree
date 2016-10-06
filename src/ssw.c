@@ -86,7 +86,7 @@ struct _profile{
 };
 
 //    Print the BLAST like output.
-void ssw_write (const s_align* a,
+void ssw_write_blast (const s_align* a,
             const char* ref_seq,
             const char* read_seq,
             const int8_t* table,
@@ -176,6 +176,87 @@ end:
             fprintf(stdout, "    %d\n\n", p);
         }
     }
+}
+
+//    Print SAM-formatted output
+void ssw_write_sam (s_align* a,
+            const char* ref_seq,
+			const char* read_name,
+            const char* read_seq,
+			const char* read_qual,
+			const size_t read_seq_len,
+            const int8_t* table,
+			const int32_t ref_offset,
+			const char* ref_seq_name,
+			int8_t strand) {
+
+/*
+static void ssw_write (s_align* a,
+            const kseq_t* ref_seq,
+            const kseq_t* read,
+            const char* read_seq,    // strand == 0: original read; strand == 1: reverse complement read
+            const int8_t* table,
+            int8_t strand) {    // 0: forward aligned ; 1: reverse complement aligned
+*/
+    int32_t mismatch;
+	// Sam format output
+	fprintf(stdout, "%s\t", read_name);
+	if (a->score1 == 0) fprintf(stdout, "4\t*\t0\t255\t*\t*\t0\t0\t*\t*\n");
+	else {
+		int32_t c, l = a->read_end1 - a->read_begin1 + 1, qb = a->ref_begin1, pb = a->read_begin1, p;
+		uint32_t mapq = -4.343 * log(1 - (double)abs(a->score1 - a->score2)/(double)a->score1);
+		mapq = (uint32_t) (mapq + 4.99);
+		mapq = mapq < 254 ? mapq : 254;
+		if (strand) fprintf(stdout, "16\t");
+		else fprintf(stdout, "0\t");
+		fprintf(stdout, "%s\t%d\t%d\t", ref_seq_name, a->ref_begin1 + 1, mapq);
+		mismatch = mark_mismatch(a->ref_begin1, a->read_begin1, a->read_end1, ref_seq, read_seq, read_seq_len, &a->cigar, &a->cigarLen);
+		for (c = 0; c < a->cigarLen; ++c) {
+			char letter = cigar_int_to_op(a->cigar[c]);
+			uint32_t length = cigar_int_to_len(a->cigar[c]);
+			fprintf(stdout, "%lu%c", (unsigned long)length, letter);
+		}
+		INFO("%s\tmismatch: %d\n", read_name, mismatch);
+		fprintf(stdout, "\t*\t0\t0\t");
+		for (c = a->read_begin1; c <= a->read_end1; ++c) fprintf(stdout, "%c", read_seq[c]);
+		fprintf(stdout, "\t");
+		if (read_qual && strand) {
+			p = a->read_end1;
+			for (c = 0; c < l; ++c) {
+				fprintf(stdout, "%c", read_qual[p]);
+				--p;
+			}
+		} else if (read_qual){
+			p = a->read_begin1;
+			for (c = 0; c < l; ++c) {
+				fprintf(stdout, "%c", read_qual[p]);
+				++p;
+			}
+		} else fprintf(stdout, "*");
+		fprintf(stdout, "\tAS:i:%d", a->score1);
+		mapq = 0;    // counter of difference
+		for (c = 0; c < a->cigarLen; ++c) {
+			char letter = cigar_int_to_op(a->cigar[c]);
+			uint32_t length = cigar_int_to_len(a->cigar[c]);
+			if (letter == 'M') {
+				for (p = 0; p < length; ++p){
+					if (table[(int)*(ref_seq + qb)] != table[(int)*(read_seq + pb)]) ++mapq;
+					++qb;
+					++pb;
+				}
+			} else if (letter == 'I') {
+				pb += length;
+				mapq += length;
+			} else {
+				qb += length;
+				mapq += length;
+			}
+		}
+		fprintf(stdout,"\tNM:i:%d\t", mapq);
+		if (a->score2 > 0) fprintf(stdout, "ZS:i:%d\n", a->score2);
+		else fprintf(stdout, "\n");
+	}
+
 }
 
 /* Generate query profile rearrange query sequence & calculate the weight of match/mismatch. */
@@ -689,7 +770,7 @@ static cigar* banded_sw (const int8_t* ref,
 			++s2;
 			kroundup32(s2);
 			if (s2 < 0) {
-				fprintf(stderr, "Alignment score and position are not consensus.\n");
+				WARN("Alignment score and position are not consensus.\n");
 				exit(1);
 			}
 			direction = (int8_t*)realloc(direction, s2 * sizeof(int8_t));
@@ -779,13 +860,13 @@ static cigar* banded_sw (const int8_t* ref,
 				op = 'D';
 				break;
 			default:
-				fprintf(stderr, "Trace back error: %d.\n", direction_line[temp1 - 1]);
 				free(direction);
 				free(h_c);
 				free(e_b);
 				free(h_b);
 				free(c);
 				free(result);
+				DIE("Trace back error: %d.\n", direction_line[temp1 - 1]);
 				return 0;
 		}
 		if (op == prev_op) ++e;
@@ -904,7 +985,7 @@ s_align* ssw_align (const s_profile* prof,
 	r->cigar = 0;
 	r->cigarLen = 0;
 	if (maskLen < 15) {
-		fprintf(stderr, "When maskLen < 15, the function ssw_align doesn't return 2nd best alignment information.\n");
+		INFO("When maskLen < 15, the function ssw_align doesn't return 2nd best alignment information.\n");
 	}
 
 	// Find the alignment scores and ending positions
@@ -915,7 +996,7 @@ s_align* ssw_align (const s_profile* prof,
 			bests = sw_sse2_word(ref, 0, refLen, readLen, weight_gapO, weight_gapE, prof->profile_word, -1, maskLen);
 			word = 1;
 		} else if (bests[0].score == 255) {
-			fprintf(stderr, "Please set 2 to the score_size parameter of the function ssw_init, otherwise the alignment results will be incorrect.\n");
+			WARN("Please set 2 to the score_size parameter of the function ssw_init, otherwise the alignment results will be incorrect.\n");
 			free(r);
 			return NULL;
 		}
@@ -923,7 +1004,7 @@ s_align* ssw_align (const s_profile* prof,
 		bests = sw_sse2_word(ref, 0, refLen, readLen, weight_gapO, weight_gapE, prof->profile_word, -1, maskLen);
 		word = 1;
 	}else {
-		fprintf(stderr, "Please call the function ssw_init before ssw_align.\n");
+		DIE("Please call the function ssw_init before ssw_align.\n",0);
 		free(r);
 		return NULL;
 	}
@@ -1036,10 +1117,10 @@ int32_t mark_mismatch (int32_t ref_begin1,
 		length = cigar_int_to_len((*cigar)[i]);
 		if (op == 'M') {
 			for (j = 0; j < length; ++j) {
-				fprintf(stderr, "ref[%d]: %c\tread[%d]: %c\n", j, *ref, j, *read);
+				INFO("ref[%d]: %c\tread[%d]: %c\n", j, *ref, j, *read);
 				if (*ref != *read) {
 					++ mismatch_length;
-					fprintf(stderr, "length_m: %d\n", length_m);
+					INFO("length_m: %d\n", length_m);
 					// the previous is match; however the current one is mismatche
 					new_cigar = store_previous_m (2, &length_m, &length_x, &p, &s, new_cigar);			
 					++ length_x;

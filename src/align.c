@@ -234,7 +234,12 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
                                                                result->ref_begin1);
     }
 
-    ssw_write(result, ref_seq, read->read_seq, _NT_TABLE, pos, desc);
+    // ssw_write_blast(result, ref_seq, read->read_seq, _NT_TABLE, pos, desc);
+    ssw_write_sam(result, ref_seq, 
+                 read->template_id, read->read_seq, read->phred, read->len,
+                 _NT_TABLE, pos, desc, 
+                 1);        // currently hard-code FORWARD strand
+    WARN("currently hard-coding FORWARD (1) strand \n");
 
     align_destroy(result);
     init_destroy(profile);

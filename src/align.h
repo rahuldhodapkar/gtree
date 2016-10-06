@@ -2,9 +2,11 @@
  * perform genome alignment against gtree index.
  */
 
+#include <stdio.h>
+#include <ctype.h>
+
 #include "types.h"
 #include "consts.h"
-
 
 /**
  * standard helper conversion functions

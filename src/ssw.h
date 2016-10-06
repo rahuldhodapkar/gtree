@@ -16,7 +16,7 @@
 #include <string.h>
 #include <emmintrin.h>
 
-#include "kseq.h"
+#include "debug.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -166,12 +166,26 @@ uint32_t to_cigar_int (uint32_t length, char op_letter);
 /**
  * write alignment as BLAST-like output to STDOUT
  */
-void ssw_write (const s_align* a,
+void ssw_write_blast (const s_align* a,
             const char* ref_seq,
             const char* read_seq,
             const int8_t* table,
 			const int32_t ref_offset,
 			const char* ref_seq_name);
+
+/**
+ * write alignment in SAM format to STDOUT
+ */
+void ssw_write_sam (s_align* a,
+            const char* ref_seq,
+			const char* read_name,
+            const char* read_seq,
+			const char* read_qual,
+			const size_t read_seq_len,
+            const int8_t* table,
+			const int32_t ref_offset,
+			const char* ref_seq_name,
+			int8_t strand);
 
 /*!	@function		Extract CIGAR operation character from CIGAR 32-bit unsigned integer
 	@param	cigar_int	32-bit unsigned integer, representing encoded CIGAR operation and length
