@@ -56,220 +56,290 @@ int validate_ix_args(args_t *args) {
 
 int ix_prune(args_t *args) {
     // use POSIX functions for timing harness
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     struct timeval tval_before, tval_after, tval_result;
+#endif
+
     ix_t *ix;
 
     /////////////////////////////////////////////////////////////////////////
     //  LOAD INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Loading index...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     ix = deserialize_ix(args->ix_fn);
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     print_ix_info(ix);
-    //
+
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     /////////////////////////////////////////////////////////////////////////
     //  PRUNE INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Pruning index...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     prune_gtree(ix->root);
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     print_ix_info(ix);
-    //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
     
     /////////////////////////////////////////////////////////////////////////
     //  SERIALIZE INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Serializing...\n");
     gettimeofday(&tval_before, NULL);
+#endif
 
-    // call to time
     serialize_ix(ix, args->out_fn);
-    //
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Serializing done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Destroying built index...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     destroy_ix(ix);
-    // 
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Destroying done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     return 0;
 }
 
 int ix_build(args_t *args) {
 
-    // use POSIX functions for timing harness
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     struct timeval tval_before, tval_after, tval_result;
+#endif
     ix_t *ix;
 
     /////////////////////////////////////////////////////////////////////////
     //  BUILD INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Building...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     ix = build_ix_from_ref_seq(args->ref_fasta_fn);
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     print_ix_info(ix);
-    //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Building done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     /////////////////////////////////////////////////////////////////////////
     //  SERIALIZE INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Serializing...\n");
     gettimeofday(&tval_before, NULL);
+#endif
 
-    // call to time
     serialize_ix(ix, args->out_fn);
-    //
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Serializing done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Destroying built index...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     destroy_ix(ix);
-    // 
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Destroying done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     return 0;
 }
 
 int ix_mask(args_t *args) {
 
-    // use POSIX functions for timing harness
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     struct timeval tval_before, tval_after, tval_result;
+#endif
     ix_t *ix;
 
     /////////////////////////////////////////////////////////////////////////
     //  LOAD INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Loading index...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     ix = deserialize_ix(args->ix_fn);
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     print_ix_info(ix);
-    //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     /////////////////////////////////////////////////////////////////////////
     //  MASK INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Pruning index...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     mask_gtree(args->ref_fasta_fn, ix);
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     print_ix_info(ix);
-    //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     /////////////////////////////////////////////////////////////////////////
     //  SERIALIZE INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Serializing...\n");
     gettimeofday(&tval_before, NULL);
+#endif
 
-    // call to time
     serialize_ix(ix, args->out_fn);
-    //
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Serializing done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Destroying built index...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     destroy_ix(ix);
-    // 
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Destroying done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     return 0;
 }
 
 int ix_stat(args_t *args) {
 
-    // use POSIX functions for timing harness
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     struct timeval tval_before, tval_after, tval_result;
+#endif
     ix_t *ix;
 
     /////////////////////////////////////////////////////////////////////////
     //  LOAD INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Loading index...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     ix = deserialize_ix(args->ix_fn);
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     print_ix_info(ix);
-    //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Destroying loaded index...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     destroy_ix(ix);
-    // 
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Destroying done in %ld.%06ld secs\n\n", 
                                         (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     return 0;
 }

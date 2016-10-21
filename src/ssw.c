@@ -190,14 +190,6 @@ void ssw_write_sam (s_align* a,
 			const char* ref_seq_name,
 			int8_t strand) {
 
-/*
-static void ssw_write (s_align* a,
-            const kseq_t* ref_seq,
-            const kseq_t* read,
-            const char* read_seq,    // strand == 0: original read; strand == 1: reverse complement read
-            const int8_t* table,
-            int8_t strand) {    // 0: forward aligned ; 1: reverse complement aligned
-*/
     int32_t mismatch;
 	// Sam format output
 	fprintf(stdout, "%s\t", read_name);
@@ -216,7 +208,6 @@ static void ssw_write (s_align* a,
 			uint32_t length = cigar_int_to_len(a->cigar[c]);
 			fprintf(stdout, "%lu%c", (unsigned long)length, letter);
 		}
-		INFO("%s\tmismatch: %d\n", read_name, mismatch);
 		fprintf(stdout, "\t*\t0\t0\t");
 		for (c = a->read_begin1; c <= a->read_end1; ++c) fprintf(stdout, "%c", read_seq[c]);
 		fprintf(stdout, "\t");
@@ -1117,10 +1108,8 @@ int32_t mark_mismatch (int32_t ref_begin1,
 		length = cigar_int_to_len((*cigar)[i]);
 		if (op == 'M') {
 			for (j = 0; j < length; ++j) {
-				INFO("ref[%d]: %c\tread[%d]: %c\n", j, *ref, j, *read);
 				if (*ref != *read) {
 					++ mismatch_length;
-					INFO("length_m: %d\n", length_m);
 					// the previous is match; however the current one is mismatche
 					new_cigar = store_previous_m (2, &length_m, &length_x, &p, &s, new_cigar);			
 					++ length_x;

@@ -18,3 +18,8 @@ to build `gtree` and `gtree-debug` binaries, and:
 
 to clean the directory of build artifacts
 
+## Miscellaneous information
+
+additional information on the CIGAR alignment string format
+can be found [here](http://drive5.com/usearch/manual/cigar.html).
+

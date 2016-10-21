@@ -253,8 +253,6 @@ int refcpy( ref_t *ref,
 
         if ( cur_pos < match->contig_start + match->contig_len 
                 && ( (c = getc(match->ref_file)) != EOF) ) {
-            DEBUG("copying reference character [%c] @ %lu\n",
-                                                c, match->contig_start + cur_pos);
 
             switch (c) {
                 case 'a':

@@ -234,7 +234,11 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
                                                                result->ref_begin1);
     }
 
-    // ssw_write_blast(result, ref_seq, read->read_seq, _NT_TABLE, pos, desc);
+    DEBUG("writing SAM output for template [%s] -> seq [%s] -> len [%d]\n",
+                                    read->template_id, read->read_seq, read->len);
+    DEBUG("writing SAM output for ref [%s] -> len [%lu]\n",
+                                    ref_seq, strlen(ref_seq));
+
     ssw_write_sam(result, ref_seq, 
                  read->template_id, read->read_seq, read->phred, read->len,
                  _NT_TABLE, pos, desc, 
@@ -258,6 +262,18 @@ int align_single_read(read_t *read, ix_t *ix, ref_t *ref, alnres_t *res) {
     int i;
     for (i = 0; i < res->n_alns; i++) {
         _extend_single_match(read, ix, ref, res->alns[i].desc, res->alns[i].pos);
+    }
+
+    return 0;
+}
+
+int print_sequence_headers(ref_t *ref) {
+
+    desc_loc_map_t *cur_ref_seq = ref->desc_map;
+    while (cur_ref_seq != NULL) {
+        printf("@SQ\tSN:%s\tLN:%lu\n", cur_ref_seq->ref_filename,
+                                       cur_ref_seq->contig_len);
+        cur_ref_seq = cur_ref_seq->next;
     }
 
     return 0;

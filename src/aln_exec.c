@@ -60,85 +60,112 @@ int validate_aln_args(args_t *args) {
 }
 
 int aln_simple(args_t *args) {
-    // use POSIX functions for timing harness
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     struct timeval tval_before, tval_after, tval_result;
+#endif
+
     ix_t *ix;
     ref_t *ref;
 
     /////////////////////////////////////////////////////////////////////////
     //  LOAD INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Loading index...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     ix = deserialize_ix(args->ix_fn);
     print_ix_info(ix);
-    //
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
-
+#endif
     /////////////////////////////////////////////////////////////////////////
     //  LOAD REFERENCE
     /////////////////////////////////////////////////////////////////////////
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Loading reference...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     ref = load_ref(args->ref_fasta_fn);
     print_ref_info(ref);
-    //
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     /////////////////////////////////////////////////////////////////////////
     //  ALIGN READS
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Aligning reads...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     FILE *reads_file = fopen(args->in_fn, "r");
     read_t *read = _init_read();
     alnres_t aln;
 
+    print_sequence_headers(ref);
     while (get_next_read(reads_file, read)) {
         align_single_read(read, ix, ref, &aln);
     }
-    //
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     _destroy_read(read);
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Destroying index...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     destroy_ix(ix);
-    //
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY REFERENCE
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Destroying ref...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     destroy_ref(ref);
-    //
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     return 0;
 }
@@ -149,45 +176,60 @@ int aln_simple(args_t *args) {
 int aln_seed_seq(args_t *args) {
     INFO("Beginning single read literal alignment\n");
 
-    // use POSIX functions for timing harness
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     struct timeval tval_before, tval_after, tval_result;
+#endif
+
     ix_t *ix;
     ref_t *ref;
 
     /////////////////////////////////////////////////////////////////////////
     //  LOAD INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Loading index...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     ix = deserialize_ix(args->ix_fn);
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     print_ix_info(ix);
-    //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     /////////////////////////////////////////////////////////////////////////
     //  LOAD REFERENCE
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Loading reference...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     ref = load_ref(args->ref_fasta_fn);
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     print_ref_info(ref);
-    //
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     /////////////////////////////////////////////////////////////////////////
     //  ALIGN READS
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Aligning reads...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     read_t *read = _init_read();
     alnres_t aln;
 
@@ -210,39 +252,51 @@ int aln_seed_seq(args_t *args) {
     read->read_seq[read_len] = '\0';
 
     align_single_read(read, ix, ref, &aln);
-    //
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     _destroy_read(read);
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY INDEX
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Destroying index...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     destroy_ix(ix);
-    //
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     /////////////////////////////////////////////////////////////////////////
     //  DESTROY REFERENCE
     /////////////////////////////////////////////////////////////////////////
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Destroying ref...\n");
     gettimeofday(&tval_before, NULL);
-    // call to time
+#endif
+
     destroy_ref(ref);
-    //
+
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
+#endif
 
     return 0;
 }

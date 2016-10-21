@@ -74,3 +74,15 @@ int extend_matches(read_t *read, ix_t *ix, alnres_t *res);
  *      errcode  otherwise
  */
 int align_single_read(read_t *read, ix_t *ix, ref_t *ref, alnres_t *res);
+
+/**
+ * print reference headers out so sequence is parsed properly
+ * 
+ * @args: 
+ *      ref - a structure with an access interface to the reference sequence
+ *
+ * @return:
+ *      0        on succcess
+ *      errcode  otherwise
+ */
+int print_sequence_headers(ref_t *ref);
