@@ -78,26 +78,28 @@ int aln_simple(args_t *args) {
 #endif
 
     ix = deserialize_ix(args->ix_fn);
-    print_ix_info(ix);
 
 #if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
+    print_ix_info(ix);
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
                                         (long int)tval_result.tv_usec);
 #endif
+
     /////////////////////////////////////////////////////////////////////////
     //  LOAD REFERENCE
     /////////////////////////////////////////////////////////////////////////
+
 #if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     INFO("Loading reference...\n");
     gettimeofday(&tval_before, NULL);
 #endif
 
     ref = load_ref(args->ref_fasta_fn);
-    print_ref_info(ref);
 
 #if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
+    print_ref_info(ref);
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
