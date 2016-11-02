@@ -202,7 +202,10 @@ void ssw_write_sam (s_align* a,
 		if (strand) fprintf(stdout, "16\t");
 		else fprintf(stdout, "0\t");
 		fprintf(stdout, "%s\t%d\t%d\t", ref_seq_name, a->ref_begin1 + 1, mapq);
-		mismatch = mark_mismatch(a->ref_begin1, a->read_begin1, a->read_end1, ref_seq, read_seq, read_seq_len, &a->cigar, &a->cigarLen);
+		mismatch = mark_mismatch(a->ref_begin1, a->read_begin1, a->read_end1, ref_seq, read_seq, 
+								 a->read_end1 - a->read_begin1,
+								 // ***NOTE*** sequence length may not be EQ original read length
+								 &a->cigar, &a->cigarLen);
 		for (c = 0; c < a->cigarLen; ++c) {
 			char letter = cigar_int_to_op(a->cigar[c]);
 			uint32_t length = cigar_int_to_len(a->cigar[c]);

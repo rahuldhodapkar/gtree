@@ -121,6 +121,7 @@ int aln_simple(args_t *args) {
 
     print_sequence_headers(ref);
     while (get_next_read(reads_file, read)) {
+        DEBUG("read length - [%d]\n", read->len);
         align_single_read(read, ix, ref, &aln);
     }
 

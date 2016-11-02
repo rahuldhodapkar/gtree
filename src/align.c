@@ -96,12 +96,13 @@ int get_next_read(FILE *read_file, read_t *read) {
                 read->phred[cur_line_pos] = '\0';
             }
 
+            if (fastq_line == 4) {
+                return 1;           // all done, read 4 lines
+            }
+
             fastq_line++;
             cur_line_pos = 0;
-        }
-        if (fastq_line > 4) {
-            // read processing completed.
-            return 1;
+            continue;
         }
 
         if (fastq_line == 1) {
@@ -197,7 +198,12 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
     // reference in parsable form
     unsigned long ref_bp_len = read->len + 2 * REF_PADDING_LEN;
     bp_t ref_bp_string[ref_bp_len];
-    refcpy(ref, desc, pos, ref_bp_len, ref_bp_string, &ref_bp_len);
+//    refcpy(ref, desc, pos - REF_PADDING_LEN, ref_bp_len, ref_bp_string, &ref_bp_len);
+    unsigned long ref_copy_start_pos = 0;
+    if ( pos > REF_PADDING_LEN ) {
+        ref_copy_start_pos = pos - REF_PADDING_LEN;
+    } 
+    refcpy(ref, desc, ref_copy_start_pos, ref_bp_len, ref_bp_string, &ref_bp_len);
 
     int8_t ref_num[ref_bp_len];
     char ref_seq[ref_bp_len + 1]; // +1 for '\0'
@@ -211,8 +217,8 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
     DEBUG("read sequence [%s]\n", read->read_seq);
     DEBUG("ref  sequence [%s]\n", ref_seq);
 
-    int8_t read_num[read->len];
-    for (i = 0; i < read->len; i++) read_num[i] = read->seq[i];
+    int8_t read_num[read->len + 1];
+    for (i = 0; i <= read->len; i++) read_num[i] = read->seq[i];
 
     // reference as characters.
     s_align *result;
