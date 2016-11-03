@@ -190,7 +190,6 @@ void ssw_write_sam (s_align* a,
 			const char* ref_seq_name,
 			int8_t strand) {
 
-    int32_t mismatch;
 	// Sam format output
 	fprintf(stdout, "%s\t", read_name);
 	if (a->score1 == 0) fprintf(stdout, "4\t*\t0\t255\t*\t*\t0\t0\t*\t*\n");
@@ -202,7 +201,7 @@ void ssw_write_sam (s_align* a,
 		if (strand) fprintf(stdout, "16\t");
 		else fprintf(stdout, "0\t");
 		fprintf(stdout, "%s\t%d\t%d\t", ref_seq_name, a->ref_begin1 + 1, mapq);
-		mismatch = mark_mismatch(a->ref_begin1, a->read_begin1, a->read_end1, ref_seq, read_seq, 
+		mark_mismatch(a->ref_begin1, a->read_begin1, a->read_end1, ref_seq, read_seq,
 								 a->read_end1 - a->read_begin1,
 								 // ***NOTE*** sequence length may not be EQ original read length
 								 &a->cigar, &a->cigarLen);

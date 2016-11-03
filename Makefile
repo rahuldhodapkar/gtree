@@ -14,7 +14,7 @@ gtree: src/main_exec.c gtree.o build_gtree.o index.o \
                        ix_exec.o aln_exec.o \
 					   ssw.o \
 					   debug.o
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@ -lm
 
 debug.o: src/debug.c
 	$(CC) $(CFLAGS) $^ -c -o $@
