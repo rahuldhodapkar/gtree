@@ -73,10 +73,9 @@ int ix_prune(args_t *args) {
 #endif
 
     ix = deserialize_ix(args->ix_fn);
-
-#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     print_ix_info(ix);
 
+#if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
@@ -93,9 +92,9 @@ int ix_prune(args_t *args) {
 #endif
 
     prune_gtree(ix->root);
+    print_ix_info(ix);
 
 #if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
-    print_ix_info(ix);
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
@@ -160,9 +159,9 @@ int ix_build(args_t *args) {
 #endif
 
     ix = build_ix_from_ref_seq(args->ref_fasta_fn);
+    print_ix_info(ix);
 
 #if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
-    print_ix_info(ix);
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Building done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
@@ -227,9 +226,9 @@ int ix_mask(args_t *args) {
 #endif
 
     ix = deserialize_ix(args->ix_fn);
+    print_ix_info(ix);
 
 #if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
-    print_ix_info(ix);
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
@@ -246,9 +245,9 @@ int ix_mask(args_t *args) {
 #endif
 
     mask_gtree(args->ref_fasta_fn, ix);
+    print_ix_info(ix);
 
 #if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
-    print_ix_info(ix);
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
@@ -313,9 +312,9 @@ int ix_stat(args_t *args) {
 #endif
 
     ix = deserialize_ix(args->ix_fn);
+    print_ix_info(ix);
 
 #if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
-    print_ix_info(ix);
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
     INFO("Loading done in %ld.%06ld secs\n\n", (long int)tval_result.tv_sec, 
