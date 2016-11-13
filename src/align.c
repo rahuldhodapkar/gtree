@@ -145,7 +145,7 @@ int seed_matches(read_t *read, ix_t *ix, alnres_t *res) {
     res->n_alns = 0;
 
     // want to use a heap here to maintain this.
-    int pos, i;
+    int pos, i, j;
     for (pos = 0; pos < read->len; pos++) {
         _get_longest_exact_match(read->seq + pos, read->len - pos,
                                                 ix->root, &cur_match);
@@ -154,6 +154,22 @@ int seed_matches(read_t *read, ix_t *ix, alnres_t *res) {
         }
         for (i = 0; i < cur_match.n_matches; i++) {
 
+            // do a proximity check
+            char is_duplicate_match = 0; 
+            for (j = 0; j < res->n_alns; j++) {
+                // logic to prevent unsigned wrapping
+                if ( (  ( res->alns[j].pos >= cur_match.locs[i].pos 
+                          && res->alns[j].pos - cur_match.locs[i].pos < SAME_SEED_IGNORE_DIST )
+                        || ( cur_match.locs[i].pos > res->alns[j].pos 
+                          && cur_match.locs[i].pos - res->alns[j].pos < SAME_SEED_IGNORE_DIST ) )
+                     && ( strcmp(res->alns[j].desc, cur_match.locs[i].desc) == 0) ) {
+                    is_duplicate_match = 1;
+                    break;
+                }
+            }
+            if (is_duplicate_match) continue; // check next seed match.
+
+            // add to exact match heap
             res->alns[res->n_alns].template_id = read->template_id;
             res->alns[res->n_alns].desc = cur_match.locs[i].desc;
             res->alns[res->n_alns].pos = cur_match.locs[i].pos;

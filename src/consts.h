@@ -70,4 +70,8 @@
 // sequence from a seeded alignment
 #define REF_PADDING_LEN 50
 
+// the distance (in base pairs) for two seed matches to be considered
+// "the same" and for the shorter one to be ignored.
+#define SAME_SEED_IGNORE_DIST 100
+
 #endif
