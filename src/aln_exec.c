@@ -35,6 +35,7 @@
 read_t *_init_read() {
     read_t *ret = malloc(sizeof(read_t));
 
+    ret->template_id[0] = '\0';
     ret->malloc_len = 0;
     ret->seq = NULL;
     ret->read_seq = NULL;
@@ -120,10 +121,13 @@ int aln_simple(args_t *args) {
     alnres_t aln;
 
     print_sequence_headers(ref);
+
     while (get_next_read(reads_file, read)) {
         DEBUG("read length - [%d]\n", read->len);
         align_single_read(read, ix, ref, &aln);
     }
+
+    fclose(reads_file);
 
 #if VERBOSITY_LEVEL >= VERBOSITY_LEVEL_DEBUG
     gettimeofday(&tval_after, NULL);

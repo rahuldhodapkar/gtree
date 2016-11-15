@@ -178,6 +178,8 @@ desc_loc_map_t *_deserialize_refix(char *refix_filename) {
         }
     }
 
+    fclose(in);
+
     return ret;
 }
 

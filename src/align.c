@@ -84,6 +84,15 @@ int get_next_read(FILE *read_file, read_t *read) {
     int cur_line_pos = 0;
 
     while ( (c = fgetc(read_file)) != EOF) {
+
+        if (cur_line_pos == read->malloc_len) {
+            read->malloc_len++;
+            // realloc key pointers
+            read->seq = realloc(read->seq, sizeof(bp_t) * read->malloc_len);
+            read->read_seq = realloc(read->read_seq, sizeof(char) * read->malloc_len);
+            read->phred = realloc(read->phred, sizeof(char) * read->malloc_len);
+        }
+
         if (c == '\n') {
             if (fastq_line == 1) {
                 read->template_id[cur_line_pos] = '\0';
@@ -115,14 +124,6 @@ int get_next_read(FILE *read_file, read_t *read) {
             }
             read->template_id[cur_line_pos - 1] = c;
         } else if ( fastq_line == 2 ) {
-            if (cur_line_pos >= read->malloc_len) {
-                read->malloc_len++;
-                // realloc key pointers
-                read->seq = realloc(read->seq, sizeof(bp_t) * read->malloc_len);
-                read->read_seq = realloc(read->read_seq, sizeof(char) * read->malloc_len);
-                read->phred = realloc(read->phred, sizeof(char) * read->malloc_len);
-            }
-
             read->seq[cur_line_pos] = char_to_bp(c);
             read->read_seq[cur_line_pos] = toupper(c);
 
