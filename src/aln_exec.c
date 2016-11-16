@@ -35,7 +35,11 @@
 read_t *_init_read() {
     read_t *ret = malloc(sizeof(read_t));
 
-    ret->template_id[0] = '\0';
+    int i;
+    for (i = 0; i < MAX_DESC_LEN; i++) {
+        ret->template_id[i] = '\0';
+    }
+
     ret->malloc_len = 0;
     ret->seq = NULL;
     ret->read_seq = NULL;
