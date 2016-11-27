@@ -11,15 +11,16 @@
 use strict;
 use warnings;
 
-use Test::More tests => 7;
+use Test::More tests => 9;
 use POSIX qw(mkfifo);
 
 my @test_files = qw/.ti0.fa .ti0.far \
                     .ti1.fa .ti1.far \
                     .ti0.refix \
                     .to0.ix \
-                    .ti0.msk.ix \
+                    .to0.msk.ix \
                     .reads.fq \
+                    .reads_truly_selective.fq \
                     .aligned.sam /;
 
 my $out;
@@ -41,6 +42,7 @@ GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 ATCACCCCACCCTATATAACCCCACACTTGGTTTAAAACACAAACCCATA
+TTATTATACCATAGGAGAGATACGTACGTGCTGACTGAGCATGCAGCTGC
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
@@ -88,6 +90,16 @@ ATCACCCCACCCTATATAACCCCACACTTGGTTTAAAACACAAACCCATA
 HERE
 close(FILE);
 
+open(FILE, '>', '.reads_truly_selective.fq') or die $!;
+# 150 bp FASTA ref
+print FILE <<"HERE";
+\@r1
+TTATTATACCATAGGAGAGATACGTACGTGCTGACTGAGCATGCAGCTGC
++
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+HERE
+close(FILE);
+
 ####################################################
 ## BUILD INDEX AND MASKS
 ####################################################
@@ -114,7 +126,14 @@ ok( $out !~ /ERROR/, 'error state detected' );
 
 $out = `grep 'r1' .aligned.sam | wc -l`;
 $out =~ s/^\s*(\d+)\s*$/$1/;
-is($out, "0", "simple alignment gets expected number of matches");
+is($out, "0", "masked alignment gets expected number of matches");
+
+$out = `./gtree aln -r .ti0 -ix .to0.msk.ix -i .reads_truly_selective.fq > .aligned.sam`;
+ok( $out !~ /ERROR/, 'error state detected' );
+
+$out = `grep 'r1' .aligned.sam | wc -l`;
+$out =~ s/^\s*(\d+)\s*$/$1/;
+is($out, "1", "masked alignment on selective sequence matches");
 
 # clean up test files
 unlink( @test_files );
