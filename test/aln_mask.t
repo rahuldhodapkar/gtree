@@ -11,7 +11,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 9;
+use Test::More tests => 11;
 use POSIX qw(mkfifo);
 
 my @test_files = qw/.ti0.fa .ti0.far \
@@ -93,7 +93,7 @@ close(FILE);
 open(FILE, '>', '.reads_truly_selective.fq') or die $!;
 # 150 bp FASTA ref
 print FILE <<"HERE";
-\@r1
+\@r2
 TTATTATACCATAGGAGAGATACGTACGTGCTGACTGAGCATGCAGCTGC
 +
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -107,12 +107,17 @@ close(FILE);
 $out = `./gtree ix build -r .ti0.fa -o .to0.ix`;
 ok( $out !~ /ERROR/, 'error state detected' );
 
-$out = `./gtree ix prune -ix .to0.ix -o .to0.msk.ix`;
+$out = `./gtree ix mask -ix .to0.ix -r .ti1.fa -o .to0.msk.ix`;
 ok( $out !~ /ERROR/, 'error state detected' );
 
 ####################################################
 ## TEST ALIGNMENT
 ####################################################
+
+#
+# test unmasked index against locally and 
+# globally selective sequences
+#
 
 $out = `./gtree aln -r .ti0 -ix .to0.ix -i .reads.fq > .aligned.sam`;
 ok( $out !~ /ERROR/, 'error state detected' );
@@ -121,12 +126,27 @@ $out = `grep 'r1' .aligned.sam | wc -l`;
 $out =~ s/^\s*(\d+)\s*$/$1/;
 is($out, "1", "simple alignment gets expected number of matches");
 
+$out = `./gtree aln -r .ti0 -ix .to0.ix -i .reads_truly_selective.fq > .aligned.sam`;
+ok( $out !~ /ERROR/, 'error state detected' );
+
+$out = `grep 'r2' .aligned.sam | wc -l`;
+$out =~ s/^\s*(\d+)\s*$/$1/;
+is($out, "1", "simple alignment gets expected number of matches");
+
+#
+# test masked index against locally selective sequence 
+#
+
 $out = `./gtree aln -r .ti0 -ix .to0.msk.ix -i .reads.fq > .aligned.sam`;
 ok( $out !~ /ERROR/, 'error state detected' );
 
 $out = `grep 'r1' .aligned.sam | wc -l`;
 $out =~ s/^\s*(\d+)\s*$/$1/;
 is($out, "0", "masked alignment gets expected number of matches");
+
+#
+# test masked index against globally selective sequence
+#
 
 $out = `./gtree aln -r .ti0 -ix .to0.msk.ix -i .reads_truly_selective.fq > .aligned.sam`;
 ok( $out !~ /ERROR/, 'error state detected' );

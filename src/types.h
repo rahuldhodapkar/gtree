@@ -31,6 +31,7 @@ typedef enum bp {
     NOBP = 5
 } bp_t;
 
+// if desc == NULL then loc is not valid
 typedef struct loc {
     char *desc;
     unsigned long pos;
@@ -43,6 +44,10 @@ typedef struct gtree {
     struct gtree *next[4];            // core gtree lookup array
 
     loc_t locs [MAX_LOCS_PER_NODE];   // get number of locs to match per contig
+                                      // if matches added during index masking, they
+                                      // will increment n_matches, but will *not* add 
+                                      // new locs. locs at these indices will have 
+                                      // "desc == NULL" and should be ignored
 } gtree_t;
 
 typedef struct gtreeix {

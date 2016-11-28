@@ -49,7 +49,7 @@ int process_base_mask(bp_t base, gtree_t **cur_node_ref, long pos, char *desc) {
     
     if (cur_node->n_matches < MAX_LOCS_PER_NODE) {
         cur_node->locs[cur_node->n_matches].desc = NULL;
-        cur_node->locs[cur_node->n_matches].pos = pos;
+        cur_node->locs[cur_node->n_matches].pos = 0;
         cur_node->n_matches++;
     }
     else if (! cur_node->too_full && cur_node->n_matches == MAX_LOCS_PER_NODE) {

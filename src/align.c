@@ -155,6 +155,11 @@ int seed_matches(read_t *read, ix_t *ix, alnres_t *res) {
         }
         for (i = 0; i < cur_match.n_matches; i++) {
 
+            if (cur_match.locs[i].desc == NULL) {
+                // fail out, this is a masked hit.
+                break;
+            }
+
             // do a proximity check
             char is_duplicate_match = 0; 
             for (j = 0; j < res->n_alns; j++) {
