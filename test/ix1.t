@@ -12,16 +12,19 @@
 use strict;
 use warnings;
 
-use Test::Simple tests => 23;
+use Test::Simple tests => 29;
 use POSIX qw(mkfifo);
 
 my @test_files = qw/.ti0 .ti1 .ti2 \
-                    .tm0
-                    .to0 .to1 .to2 \
-                    .to0.prn .to1.prn .to2.prn \
+                    .ti3.far .ti3 \
+                    .tm0 \
+                    .to0 .to1 .to2 .to3 \
+                    .to0.prn .to1.prn .to2.prn .to3.prn \
                     .to0.msk .to1.prn .to2.prn \
                     .to0.msk.prn .to1.msk.prn .to2.msk.prn /;
 my $out;
+
+my $utils_root_path = 'utils/';
 
 ####################################################
 ## GENERATE INPUT FILES
@@ -49,6 +52,33 @@ gggggggggggggggggggggggggggggggga
 HERE
 close(FILE);
 
+open(FILE, '>', '.ti3.far') or die $!;
+print FILE <<"HERE";
+>chr1
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+gggggggggggggggggggggggggggggggg
+HERE
+close(FILE);
+
+`cat .ti3.far | $utils_root_path/rm-fa-newlines > .ti3`;
+
 open(FILE, '>', '.tm0') or die $!;
 print FILE <<"HERE";
 >chr2
@@ -60,7 +90,7 @@ close(FILE);
 ## TEST INDEX BUILD
 ####################################################
 
-$out = `./gtree ix build -r .ti1 -o .to0`;
+$out = `./gtree ix build -r .ti0 -o .to0`;
 ok( $out =~ /nodes: 32/, 'build single index window' );
 ok( $out !~ /ERROR/, 'build single index window' );
 
@@ -70,6 +100,10 @@ ok( $out !~ /ERROR/, 'execution has errors' );
 
 $out = `./gtree ix build -r .ti2 -o .to2`;
 ok( $out =~ /nodes: 33/, 'build index with branching' );
+ok( $out !~ /ERROR/, 'execution has errors' );
+
+$out = `./gtree ix build -r .ti3 -o .to3`;
+ok( $out =~ /nodes: 32/, 'build repeated index window' );
 ok( $out !~ /ERROR/, 'execution has errors' );
 
 ####################################################
@@ -88,35 +122,40 @@ $out = `./gtree ix stat -n -ix .to2`;
 ok( $out =~ /nodes: 33/, 'stat index with branching' );
 ok( $out !~ /ERROR/, 'execution has errors' );
 
+$out = `./gtree ix stat -n -ix .to3`;
+ok( $out =~ /nodes: 32/, 'stat repeated index' );
+ok( $out !~ /ERROR/, 'execution has errors' );
+
 ####################################################
 ## TEST INDEX PRUNE
 ####################################################
 
 $out = `./gtree ix prune -ix .to0 -o .to0.prn`;
-ok( $out =~ /nodes: 2/, 'prune single index window' );
+ok( $out =~ /nodes: 32/, 'prune single index window' );
 ok( $out !~ /ERROR/, 'execution has errors' );
 
 $out = `./gtree ix prune -ix .to1 -o .to1.prn`;
-ok( $out =~ /nodes: 2/, 'prune index window with duplicate nodes' );
+ok( $out =~ /nodes: 32/, 'prune index window with duplicate nodes' );
 ok( $out !~ /ERROR/, 'execution has errors' );
 
 $out = `./gtree ix prune -ix .to2 -o .to2.prn`;
 ok( $out =~ /nodes: 33/, 'prune index with branching' );
 ok( $out !~ /ERROR/, 'execution has errors' );
 
+$out = `./gtree ix prune -ix .to3 -o .to3.prn`;
+ok( $out =~ /nodes: 1/, 'prune index with repetition' );
+ok( $out !~ /ERROR/, 'execution has errors' );
+
 ####################################################
 ## TEST INDEX MASK
 ####################################################
 
-$out = `./gtree ix mask -r .tm0 -ix .to0 -o .to0.msk`;
+$out = `./gtree ix mask -r .ti3 -ix .to0 -o .to0.msk`;
 ok( $out =~ /nodes: 32/, 'mask single index window' );
 ok( $out !~ /ERROR/, 'execution has errors' );
 
-# NOTE:
-#   expected pruned length is 2+ masking seq + 1 for root node
-#                                            + 1 for last selective node
 $out = `./gtree ix prune -ix .to0.msk -o .to0.msk.prn`;
-ok( $out =~ /nodes: 7/, 'mask single index window' );
+ok( $out =~ /nodes: 1/, 'prune masked index window' );
 ok( $out !~ /ERROR/, 'execution has errors' );
 
 # clean up test files

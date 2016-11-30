@@ -50,67 +50,35 @@ void destroy_gtree( gtree_t *node ) {
     }
 }
 
-int _fewest_matches_in_subtree( gtree_t *node ) {
 
-    int lowest = node->too_full ? INT_MAX : node->n_matches;
+void prune_gtree_helper( gtree_t *node, gtree_t *parent, int parent_ix) {
 
-    int i, candidate;
+    // recursively prune all potential children
+    int i;
     for (i = 0; i < 4; i++) {
         if (node->next[i] != NULL) {
-            candidate = _fewest_matches_in_subtree(node->next[i]);
-            if (candidate < lowest) {
-                lowest = candidate;
-            }
+            prune_gtree_helper(node->next[i], node, i);
         }
     }
 
-    return lowest;
-}
-
-void prune_gtree( gtree_t *node ) {
-
-    int i, n_children = 0;
-    gtree_t *children[4];
-    int nextpos[4];
-
+    int n_children = 0;
     for (i = 0; i < 4; i++) {
         if (node->next[i] != NULL) {
-            children[n_children] = node->next[i];
-            nextpos[n_children] = i;
             n_children++;
         }
     }
 
-    if (n_children == 0) {
-        // nothing to be done
+    if (n_children > 0) {
         return;
     }
-    else if (n_children > 1) {
-        // recursively prune
-        for (i = 0; i < n_children; i++) {
-            prune_gtree(children[i]);
-        }
-        return;
+    else if (node->too_full && parent != NULL) {
+        parent->next[parent_ix] = NULL;
+        destroy_gtree(node);
     }
-    // else 1 child
-    if (node->too_full) {
-        prune_gtree(children[0]);
-        return;
-    }
+}
 
-    // check if number of matches equal
-    if (node->n_matches == children[0]->n_matches) {
-        if (children[0]->n_matches == _fewest_matches_in_subtree(children[0])) {
-            // then we may prune the child
-            node->next[nextpos[0]] = NULL;
-            destroy_gtree(children[0]);
-            return;
-        }
-    }
-
-    prune_gtree(children[0]);
-
-    return;
+void prune_gtree( gtree_t *node ) {
+    prune_gtree_helper( node, NULL, -1 );
 }
 
 long count_gtree_nodes( gtree_t *node ) {
