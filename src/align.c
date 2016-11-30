@@ -269,7 +269,9 @@ int _extend_single_match(read_t *read, ix_t *ix, ref_t *ref, char *desc, long po
 
     ssw_write_sam(result, ref_seq, 
                  read->template_id, read->read_seq, read->phred, read->len,
-                 _NT_TABLE, pos, desc, 
+                 _NT_TABLE,
+                 ref_copy_start_pos,
+                 desc,
                  1);        // currently hard-code FORWARD strand
     WARN("currently hard-coding FORWARD (1) strand \n");
 

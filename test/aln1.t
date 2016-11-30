@@ -11,7 +11,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 7;
+use Test::More tests => 8;
 use POSIX qw(mkfifo);
 
 my @test_files = qw/.ti0.fa .ti1.fa \
@@ -117,7 +117,9 @@ ok( $out !~ /ERROR/, 'error state detected' );
 $out = `grep 'r1' .same_aligned.sam | wc -l`;
 $out =~ s/^\s*(\d+)\s*$/$1/;
 is($out, "1", "simple alignment gets expected number of matches");
-# ok( $out =~ /^1$/, "[$out] matches aligned, expected 1" );
+
+$out = `cat .same_aligned.sam`;
+ok( $out =~ /chr1\t251/, "simple alignment matches correct position");
 
 # clean up test files
 unlink( @test_files );

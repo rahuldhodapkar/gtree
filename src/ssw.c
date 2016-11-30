@@ -200,7 +200,7 @@ void ssw_write_sam (s_align* a,
 		mapq = mapq < 254 ? mapq : 254;
 		if (strand) fprintf(stdout, "16\t");
 		else fprintf(stdout, "0\t");
-		fprintf(stdout, "%s\t%d\t%d\t", ref_seq_name, a->ref_begin1 + 1, mapq);
+		fprintf(stdout, "%s\t%d\t%d\t", ref_seq_name, ref_offset + a->ref_begin1 + 1, mapq);
 		mark_mismatch(a->ref_begin1, a->read_begin1, a->read_end1, ref_seq, read_seq,
 								 a->read_end1 - a->read_begin1,
 								 // ***NOTE*** sequence length may not be EQ original read length
